@@ -1,0 +1,16 @@
+{
+  "rules": {
+    "documents": {
+      "$uid": {
+        ".read": "$uid === auth.uid",
+        ".write": "$uid === auth.uid"
+      }
+    },
+    "admin": {
+      "$uid": {
+        ".read": "auth.token.email === 'vishnusridhar.tpm@gmail.com'",
+        ".write": "auth.token.email === 'vishnusridhar.tpm@gmail.com'"
+      }
+    }
+  }
+}

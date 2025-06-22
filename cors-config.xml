@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CorsConfig>
+  <CorsMember>
+    <AllowedOrigins>
+      <Origin>https://9000-firebase-prepmeinc-1750591195440.cluster-nzwlpk54dvagsxetkvxzbvslyi.cloudworkstations.dev</Origin>
+    </AllowedOrigins>
+    <AllowedMethods>
+      <Method>GET</Method>
+      <Method>HEAD</Method>
+      <Method>DELETE</Method>
+      <Method>POST</Method>
+      <Method>PUT</Method>
+    </AllowedMethods>
+    <AllowedHeaders>
+      <Header>*</Header>
+    </AllowedHeaders>
+    <ExposeHeaders>
+      <ExposeHeader>Content-Length</ExposeHeader>
+      <ExposeHeader>Content-Range</ExposeHeader>
+    </ExposeHeaders>
+    <MaxAgeSec>3000</MaxAgeSec>
+  </CorsMember>
+</CorsConfig>
