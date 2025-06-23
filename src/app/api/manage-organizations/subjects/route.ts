@@ -37,9 +37,10 @@ export async function GET(request: NextRequest) {
     } else {
       return NextResponse.json({ message: 'Either subject ID or school ID is required' }, { status: 400 });
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
     console.error('API Error (GET /subjects):', error);
-    return NextResponse.json({ message: error.message || 'Failed to retrieve subjects' }, { status: 500 });
+    return NextResponse.json({ message: errorMessage || 'Failed to retrieve subjects' }, { status: 500 });
   }
 }
 
@@ -59,9 +60,10 @@ export async function POST(request: NextRequest) {
     }
     const newSubject = await addSubject(subjectData);
     return NextResponse.json({ subject: newSubject }, { status: 201 });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
     console.error('API Error (POST /subjects):', error);
-    return NextResponse.json({ message: error.message || 'Failed to add subject' }, { status: 500 });
+    return NextResponse.json({ message: errorMessage || 'Failed to add subject' }, { status: 500 });
   }
 }
 
@@ -81,9 +83,10 @@ export async function PUT(request: NextRequest) {
     }
     await updateSubject(id, subjectData);
     return NextResponse.json({ message: 'Subject updated successfully' }, { status: 200 });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
     console.error('API Error (PUT /subjects):', error);
-    return NextResponse.json({ message: error.message || 'Failed to update subject' }, { status: 500 });
+    return NextResponse.json({ message: errorMessage || 'Failed to update subject' }, { status: 500 });
   }
 }
 
@@ -103,8 +106,9 @@ export async function DELETE(request: NextRequest) {
     }
     await deleteSubject(id);
     return NextResponse.json({ message: 'Subject deleted successfully' }, { status: 200 });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
     console.error('API Error (DELETE /subjects):', error);
-    return NextResponse.json({ message: error.message || 'Failed to delete subject' }, { status: 500 });
+    return NextResponse.json({ message: errorMessage || 'Failed to delete subject' }, { status: 500 });
   }
 }

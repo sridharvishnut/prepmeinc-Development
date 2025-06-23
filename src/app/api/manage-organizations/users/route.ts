@@ -7,8 +7,8 @@ import {
   getSchoolUserById,
   updateSchoolUser,
   deleteSchoolUser,
-} from '../../../../src/lib/manage-organizations/userService';
-import { SchoolUser } from '../../../../src/types/manage-organizations';
+} from '@/lib/manage-organizations/userService';
+import { SchoolUser } from '@/types/manage-organizations';
 
 /**
  * Feature ID: MO-030

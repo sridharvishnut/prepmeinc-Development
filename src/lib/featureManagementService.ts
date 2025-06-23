@@ -1,5 +1,3 @@
-// src/lib/featureManagementService.ts
-
 import { db } from '../firebaseUtils';
 import {
   collection,
@@ -11,17 +9,7 @@ import {
   query,
   where,
 } from 'firebase/firestore';
-
-interface FeatureFlag {
-  id: string; // Unique identifier for the feature (e.g., 'student_content_access')
-  name: string; // Display name of the feature
-  description: string; // Description of what the feature does
-  enabled: boolean; // Global enable/disable status
-  enabledForSchools: { [schoolId: string]: boolean }; // Per-school override
-  defaultEnabled: boolean; // Default state for new schools or if not explicitly set
-  createdAt: number;
-  updatedAt: number;
-}
+import { FeatureFlag } from '@/types/manage-organizations'; // Import FeatureFlag from central types
 
 const featureFlagsCollectionRef = collection(db, 'featureFlags');
 
@@ -33,20 +21,21 @@ const featureFlagsCollectionRef = collection(db, 'featureFlags');
  * Current Module Implemented: Manage-Organizations (src/lib)
  * Module to be implemented: (None - core service)
  */
-export const upsertFeatureFlag = async (featureFlag: Omit<FeatureFlag, 'createdAt' | 'updatedAt'>): Promise<FeatureFlag> => {
+export const upsertFeatureFlag = async (featureFlag: FeatureFlag): Promise<FeatureFlag> => {
   try {
     const now = Date.now();
-    const dataToSave = {
+    const dataToSave: FeatureFlag = {
       ...featureFlag,
       createdAt: featureFlag.createdAt || now, // Preserve createdAt if exists, otherwise set now
       updatedAt: now,
     };
     const docRef = doc(featureFlagsCollectionRef, featureFlag.id);
     await setDoc(docRef, dataToSave, { merge: true });
-    return dataToSave as FeatureFlag;
-  } catch (error) {
+    return dataToSave;
+  } catch (error: unknown) { // Changed to unknown
+    const errorMessage = error instanceof Error ? error.message : `Failed to upsert feature flag ${featureFlag.id}.`;
     console.error(`Error upserting feature flag ${featureFlag.id}:`, error);
-    throw new Error(`Failed to upsert feature flag ${featureFlag.id}.`);
+    throw new Error(errorMessage);
   }
 };
 
@@ -66,9 +55,10 @@ export const getFeatureFlagById = async (id: string): Promise<FeatureFlag | null
       return { id: docSnap.id, ...docSnap.data() } as FeatureFlag;
     }
     return null;
-  } catch (error) {
+  } catch (error: unknown) { // Changed to unknown
+    const errorMessage = error instanceof Error ? error.message : `Failed to retrieve feature flag with ID ${id}.`;
     console.error(`Error getting feature flag with ID ${id}:`, error);
-    throw new Error(`Failed to retrieve feature flag with ID ${id}.`);
+    throw new Error(errorMessage);
   }
 };
 
@@ -89,9 +79,10 @@ export const getAllFeatureFlags = async (): Promise<FeatureFlag[]> => {
       flags.push({ id: doc.id, ...doc.data() } as FeatureFlag);
     });
     return flags;
-  } catch (error) {
+  } catch (error: unknown) { // Changed to unknown
+    const errorMessage = error instanceof Error ? error.message : 'Failed to retrieve all feature flags.';
     console.error('Error getting all feature flags:', error);
-    throw new Error('Failed to retrieve all feature flags.');
+    throw new Error(errorMessage);
   }
 };
 
@@ -119,7 +110,8 @@ export const isFeatureEnabledForSchool = async (featureId: string, schoolId: str
 
     // Otherwise, use global enabled status
     return flag.enabled;
-  } catch (error) {
+  } catch (error: unknown) { // Changed to unknown
+    const errorMessage = error instanceof Error ? error.message : `Error checking feature '${featureId}' for school '${schoolId}'.`;
     console.error(`Error checking feature '${featureId}' for school '${schoolId}':`, error);
     return false; // Default to false on error
   }

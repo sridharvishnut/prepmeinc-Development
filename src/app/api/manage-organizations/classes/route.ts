@@ -37,9 +37,10 @@ export async function GET(request: NextRequest) {
     } else {
       return NextResponse.json({ message: 'Either class ID or school ID is required' }, { status: 400 });
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
     console.error('API Error (GET /classes):', error);
-    return NextResponse.json({ message: error.message || 'Failed to retrieve classes' }, { status: 500 });
+    return NextResponse.json({ message: errorMessage || 'Failed to retrieve classes' }, { status: 500 });
   }
 }
 
@@ -59,9 +60,10 @@ export async function POST(request: NextRequest) {
     }
     const newClass = await addClass(classData);
     return NextResponse.json({ class: newClass }, { status: 201 });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
     console.error('API Error (POST /classes):', error);
-    return NextResponse.json({ message: error.message || 'Failed to add class' }, { status: 500 });
+    return NextResponse.json({ message: errorMessage || 'Failed to add class' }, { status: 500 });
   }
 }
 
@@ -81,9 +83,10 @@ export async function PUT(request: NextRequest) {
     }
     await updateClass(id, classData);
     return NextResponse.json({ message: 'Class updated successfully' }, { status: 200 });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
     console.error('API Error (PUT /classes):', error);
-    return NextResponse.json({ message: error.message || 'Failed to update class' }, { status: 500 });
+    return NextResponse.json({ message: errorMessage || 'Failed to update class' }, { status: 500 });
   }
 }
 
@@ -103,8 +106,9 @@ export async function DELETE(request: NextRequest) {
     }
     await deleteClass(id);
     return NextResponse.json({ message: 'Class deleted successfully' }, { status: 200 });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
     console.error('API Error (DELETE /classes):', error);
-    return NextResponse.json({ message: error.message || 'Failed to delete class' }, { status: 500 });
+    return NextResponse.json({ message: errorMessage || 'Failed to delete class' }, { status: 500 });
   }
 }

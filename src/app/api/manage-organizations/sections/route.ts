@@ -37,9 +37,10 @@ export async function GET(request: NextRequest) {
     } else {
       return NextResponse.json({ message: 'Either section ID or class ID is required' }, { status: 400 });
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
     console.error('API Error (GET /sections):', error);
-    return NextResponse.json({ message: error.message || 'Failed to retrieve sections' }, { status: 500 });
+    return NextResponse.json({ message: errorMessage || 'Failed to retrieve sections' }, { status: 500 });
   }
 }
 
@@ -59,9 +60,10 @@ export async function POST(request: NextRequest) {
     }
     const newSection = await addSection(sectionData);
     return NextResponse.json({ section: newSection }, { status: 201 });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
     console.error('API Error (POST /sections):', error);
-    return NextResponse.json({ message: error.message || 'Failed to add section' }, { status: 500 });
+    return NextResponse.json({ message: errorMessage || 'Failed to add section' }, { status: 500 });
   }
 }
 
@@ -81,9 +83,10 @@ export async function PUT(request: NextRequest) {
     }
     await updateSection(id, sectionData);
     return NextResponse.json({ message: 'Section updated successfully' }, { status: 200 });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
     console.error('API Error (PUT /sections):', error);
-    return NextResponse.json({ message: error.message || 'Failed to update section' }, { status: 500 });
+    return NextResponse.json({ message: errorMessage || 'Failed to update section' }, { status: 500 });
   }
 }
 
@@ -103,8 +106,9 @@ export async function DELETE(request: NextRequest) {
     }
     await deleteSection(id);
     return NextResponse.json({ message: 'Section deleted successfully' }, { status: 200 });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
     console.error('API Error (DELETE /sections):', error);
-    return NextResponse.json({ message: error.message || 'Failed to delete section' }, { status: 500 });
+    return NextResponse.json({ message: errorMessage || 'Failed to delete section' }, { status: 500 });
   }
 }

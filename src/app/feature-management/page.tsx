@@ -3,8 +3,8 @@
 "use client";
 
 import React, { useState } from 'react';
-import FeatureFlagForm from '../../src/components/feature-management/FeatureFlagForm';
-import FeatureFlagList from '../../src/components/feature-management/FeatureFlagList';
+import FeatureFlagForm from '@/components/feature-management/FeatureFlagForm';
+import FeatureFlagList from '@/components/feature-management/FeatureFlagList';
 
 interface FeatureFlag {
   id: string;

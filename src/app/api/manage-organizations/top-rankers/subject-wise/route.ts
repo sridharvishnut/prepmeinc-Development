@@ -1,7 +1,7 @@
 // src/app/api/manage-organizations/top-rankers/subject-wise/route.ts
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getTopStudentsBySubject } from '../../../../../src/lib/manage-organizations/examResultService';
+import { getTopStudentsBySubject } from '@/lib/manage-organizations/examResultService';
 
 /**
  * Feature ID: MO-044
@@ -26,8 +26,9 @@ export async function GET(request: NextRequest) {
 
     const topStudents = await getTopStudentsBySubject(schoolId, classId, sectionId, subjectId, topN);
     return NextResponse.json({ topStudents }, { status: 200 });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
     console.error('API Error (GET /top-rankers/subject-wise):', error);
-    return NextResponse.json({ message: error.message || 'Failed to retrieve top students by subject' }, { status: 500 });
+    return NextResponse.json({ message: errorMessage || 'Failed to retrieve top students by subject' }, { status: 500 });
   }
 }

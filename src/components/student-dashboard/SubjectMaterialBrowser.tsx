@@ -3,7 +3,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Subject, SubjectMaterial } from '../../../types/manage-organizations';
+import { Subject, SubjectMaterial } from '@/types/manage-organizations';
 
 interface SubjectMaterialBrowserProps {
   studentId: string; // Current student's ID
@@ -20,7 +20,7 @@ interface SubjectMaterialBrowserProps {
  * Module to be implemented: Actual file upload, AI test generation integration, Test taking UI.
  */
 const SubjectMaterialBrowser: React.FC<SubjectMaterialBrowserProps> = ({
-  studentId,
+  studentId, // Marked as unused in build output, but logically part of props
   schoolId,
   isCustomTestFeatureEnabled,
 }) => {
@@ -45,8 +45,9 @@ const SubjectMaterialBrowser: React.FC<SubjectMaterialBrowserProps> = ({
           const errorData = await response.json();
           throw new Error(errorData.message || 'Failed to fetch subjects');
         }
-      } catch (err: any) {
-        setError(err.message || 'An error occurred while fetching subjects.');
+      } catch (err: unknown) {
+        const errorMessage = err instanceof Error ? err.message : 'An error occurred while fetching subjects.';
+        setError(errorMessage);
       } finally {
         setLoading(false);
       }
@@ -71,8 +72,9 @@ const SubjectMaterialBrowser: React.FC<SubjectMaterialBrowserProps> = ({
         const errorData = await response.json();
         throw new Error(errorData.message || 'Failed to fetch subject materials');
       }
-    } catch (err: any) {
-      setError(err.message || 'An error occurred while fetching subject materials.');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'An error occurred while fetching subject materials.';
+      setError(errorMessage);
       setMaterials([]);
     } finally {
       setLoading(false);
@@ -88,7 +90,7 @@ const SubjectMaterialBrowser: React.FC<SubjectMaterialBrowserProps> = ({
     console.log('Student viewing content:', fileUrl);
   };
 
-  const handleGenerateTest = (materialId: string, type: 'from_document' | 'ai_generated') => {
+  const handleGenerateTest = (materialId: string, type: 'from_document' | 'ai_generated') => { // handleGenerateTest is unused, but kept for future implementation
     alert(`Generate Test (${type.replace('_', ' ')}) for Material ID: ${materialId} (Functionality coming soon!)`);
     console.log(`Student generating test of type ${type} for material:`, materialId);
     // This would trigger an API call to initiate test generation

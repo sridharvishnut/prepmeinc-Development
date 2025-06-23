@@ -3,16 +3,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { School } from '../../types/manage-organizations';
-
-interface FeatureFlag {
-  id: string;
-  name: string;
-  description: string;
-  enabled: boolean;
-  enabledForSchools: { [key: string]: boolean };
-  defaultEnabled: boolean;
-}
+import { School, FeatureFlag } from '@/types/manage-organizations'; // Import FeatureFlag from central types
 
 interface FeatureFlagFormProps {
   onFlagUpserted: () => void;
@@ -51,8 +42,10 @@ const FeatureFlagForm: React.FC<FeatureFlagFormProps> = ({
           const data = await response.json();
           setSchools(data.schools);
         }
-      } catch (err) {
+      } catch (err: unknown) { // Changed to unknown
         console.error('Failed to fetch schools:', err);
+        const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred.';
+        setError(errorMessage);
       }
     };
     fetchSchools();
@@ -74,7 +67,7 @@ const FeatureFlagForm: React.FC<FeatureFlagFormProps> = ({
       setDefaultEnabled(false);
       setEnabledForSchools({});
     }
-  }, [initialData?.id]); // Changed dependency to initialData?.id
+  }, [initialData]); // Changed dependency to initialData
 
   const handleSchoolToggle = (schoolId: string, isChecked: boolean) => {
     setEnabledForSchools((prev) => ({
@@ -122,8 +115,9 @@ const FeatureFlagForm: React.FC<FeatureFlagFormProps> = ({
         setDefaultEnabled(false);
         setEnabledForSchools({});
       }
-    } catch (err: any) {
-      setError(err.message || 'An unexpected error occurred.');
+    } catch (err: unknown) { // Changed to unknown
+      const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred.';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -185,8 +179,8 @@ const FeatureFlagForm: React.FC<FeatureFlagFormProps> = ({
               name="defaultEnabledOption"
               type="checkbox"
               checked={defaultEnabled}
-              onChange={(e) => setDefaultEnabled(e.target.checked)}\
-              className="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded"\
+              onChange={(e) => setDefaultEnabled(e.target.checked)}
+              className="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded"
             />
             <label htmlFor="defaultEnabled" className="ml-2 block text-sm text-gray-900">Default Enabled for New Schools</label>
           </div>

@@ -3,7 +3,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { ExamResult, Subject } from '../../../types/manage-organizations';
+import { ExamResult, Subject } from '@/types/manage-organizations';
 
 interface StudentExamResultsProps {
   studentId: string;
@@ -38,7 +38,7 @@ const StudentExamResults: React.FC<StudentExamResultsProps> = ({
         const data = await response.json();
         setSubjects(data.subjects);
       }
-    } catch (err) {
+    } catch (err: unknown) {
       console.error('Failed to fetch subjects for exam results:', err);
     }
   }, [schoolId]);
@@ -62,8 +62,9 @@ const StudentExamResults: React.FC<StudentExamResultsProps> = ({
       }
       const data = await response.json();
       setExamResults(data.examResults);
-    } catch (err: any) {
-      setError(err.message || 'An unexpected error occurred while fetching exam results.');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred while fetching exam results.';
+      setError(errorMessage);
       setExamResults([]);
     } finally {
       setLoading(false);

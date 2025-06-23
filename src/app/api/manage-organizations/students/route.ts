@@ -42,9 +42,10 @@ export async function GET(request: NextRequest) {
       const students = await getStudents(filters);
       return NextResponse.json({ students }, { status: 200 });
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
     console.error('API Error (GET /students):', error);
-    return NextResponse.json({ message: error.message || 'Failed to retrieve students' }, { status: 500 });
+    return NextResponse.json({ message: errorMessage || 'Failed to retrieve students' }, { status: 500 });
   }
 }
 
@@ -52,7 +53,7 @@ export async function GET(request: NextRequest) {
  * Feature ID: MO-016
  * Feature Name: Student Management API Endpoints - POST (Add Student)
  * What it does: Handles POST requests for adding a new student.
- * Description: Receives student data from the request body and uses the studentService to add it to the database.
+ * Description: Receives student data from the request body and uses the studentService to add it to the database. Assumes the 'id' in the payload is the Firebase Auth UID.
  * Current Module Implemented: Manage-Organizations (src/app/api/manage-organizations/students)
  * Module to be implemented: Manage-Organizations (Frontend for adding a student, Bulk upload endpoint)
  */
@@ -64,9 +65,10 @@ export async function POST(request: NextRequest) {
     }
     const newStudent = await addStudent(studentData);
     return NextResponse.json({ student: newStudent }, { status: 201 });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
     console.error('API Error (POST /students):', error);
-    return NextResponse.json({ message: error.message || 'Failed to add student' }, { status: 500 });
+    return NextResponse.json({ message: errorMessage || 'Failed to add student' }, { status: 500 });
   }
 }
 
@@ -86,9 +88,10 @@ export async function PUT(request: NextRequest) {
     }
     await updateStudent(id, studentData);
     return NextResponse.json({ message: 'Student updated successfully' }, { status: 200 });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
     console.error('API Error (PUT /students):', error);
-    return NextResponse.json({ message: error.message || 'Failed to update student' }, { status: 500 });
+    return NextResponse.json({ message: errorMessage || 'Failed to update student' }, { status: 500 });
   }
 }
 
@@ -108,8 +111,9 @@ export async function DELETE(request: NextRequest) {
     }
     await deleteStudent(id);
     return NextResponse.json({ message: 'Student deleted successfully' }, { status: 200 });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
     console.error('API Error (DELETE /students):', error);
-    return NextResponse.json({ message: error.message || 'Failed to delete student' }, { status: 500 });
+    return NextResponse.json({ message: errorMessage || 'Failed to delete student' }, { status: 500 });
   }
 }

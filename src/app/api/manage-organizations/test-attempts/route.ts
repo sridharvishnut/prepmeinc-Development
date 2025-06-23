@@ -5,8 +5,8 @@ import {
   addTestAttempt,
   getTestAttempts,
   updateTestAttempt,
-} from '../../../../src/lib/manage-organizations/examResultService';
-import { TestAttempt } from '../../../../src/types/manage-organizations';
+} from '@/lib/manage-organizations/examResultService';
+import { TestAttempt } from '@/types/manage-organizations';
 
 /**
  * Feature ID: MO-037
@@ -24,9 +24,10 @@ export async function POST(request: NextRequest) {
     }
     const newAttempt = await addTestAttempt(attemptData);
     return NextResponse.json({ testAttempt: newAttempt }, { status: 201 });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
     console.error('API Error (POST /test-attempts):', error);
-    return NextResponse.json({ message: error.message || 'Failed to add test attempt' }, { status: 500 });
+    return NextResponse.json({ message: errorMessage || 'Failed to add test attempt' }, { status: 500 });
   }
 }
 
@@ -56,9 +57,10 @@ export async function GET(request: NextRequest) {
     };
     const testAttempts = await getTestAttempts(filters);
     return NextResponse.json({ testAttempts }, { status: 200 });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
     console.error('API Error (GET /test-attempts):', error);
-    return NextResponse.json({ message: error.message || 'Failed to retrieve test attempts' }, { status: 500 });
+    return NextResponse.json({ message: errorMessage || 'Failed to retrieve test attempts' }, { status: 500 });
   }
 }
 
@@ -78,8 +80,9 @@ export async function PUT(request: NextRequest) {
     }
     await updateTestAttempt(id, attemptData);
     return NextResponse.json({ message: 'Test attempt updated successfully' }, { status: 200 });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
     console.error('API Error (PUT /test-attempts):', error);
-    return NextResponse.json({ message: error.message || 'Failed to update test attempt' }, { status: 500 });
+    return NextResponse.json({ message: errorMessage || 'Failed to update test attempt' }, { status: 500 });
   }
 }

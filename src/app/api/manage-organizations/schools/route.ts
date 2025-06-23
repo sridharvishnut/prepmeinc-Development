@@ -34,9 +34,10 @@ export async function GET(request: NextRequest) {
       const schools = await getAllSchools();
       return NextResponse.json({ schools }, { status: 200 });
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
     console.error('API Error (GET /schools):', error);
-    return NextResponse.json({ message: error.message || 'Failed to retrieve schools' }, { status: 500 });
+    return NextResponse.json({ message: errorMessage || 'Failed to retrieve schools' }, { status: 500 });
   }
 }
 
@@ -53,9 +54,10 @@ export async function POST(request: NextRequest) {
     const schoolData: Omit<School, 'id' | 'createdAt' | 'updatedAt'> = await request.json();
     const newSchool = await addSchool(schoolData);
     return NextResponse.json({ school: newSchool }, { status: 201 });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
     console.error('API Error (POST /schools):', error);
-    return NextResponse.json({ message: error.message || 'Failed to add school' }, { status: 500 });
+    return NextResponse.json({ message: errorMessage || 'Failed to add school' }, { status: 500 });
   }
 }
 
@@ -75,9 +77,10 @@ export async function PUT(request: NextRequest) {
     }
     await updateSchool(id, schoolData);
     return NextResponse.json({ message: 'School updated successfully' }, { status: 200 });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
     console.error('API Error (PUT /schools):', error);
-    return NextResponse.json({ message: error.message || 'Failed to update school' }, { status: 500 });
+    return NextResponse.json({ message: errorMessage || 'Failed to update school' }, { status: 500 });
   }
 }
 
@@ -97,8 +100,9 @@ export async function DELETE(request: NextRequest) {
     }
     await deleteSchool(id);
     return NextResponse.json({ message: 'School deleted successfully' }, { status: 200 });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
     console.error('API Error (DELETE /schools):', error);
-    return NextResponse.json({ message: error.message || 'Failed to delete school' }, { status: 500 });
+    return NextResponse.json({ message: errorMessage || 'Failed to delete school' }, { status: 500 });
   }
 }

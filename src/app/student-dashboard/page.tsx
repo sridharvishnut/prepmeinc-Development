@@ -3,11 +3,11 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from 'react';
-import StudentInfo from '../../src/components/student-dashboard/StudentInfo';
-import SubjectMaterialBrowser from '../../src/components/student-dashboard/SubjectMaterialBrowser';
-import StudentExamResults from '../../src/components/student-dashboard/StudentExamResults';
-import { isFeatureEnabledForSchool } from '../../src/lib/featureManagementService';
-import { Student } from '../../src/types/manage-organizations';
+import StudentInfo from '@/components/student-dashboard/StudentInfo';
+import SubjectMaterialBrowser from '@/components/student-dashboard/SubjectMaterialBrowser';
+import StudentExamResults from '@/components/student-dashboard/StudentExamResults';
+import { isFeatureEnabledForSchool } from '@/lib/featureManagementService';
+import { Student } from '@/types/manage-organizations';
 
 // Placeholder for real authentication context
 // In a real app, you'd get the current user's ID and their associated school/student data securely.

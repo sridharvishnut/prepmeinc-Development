@@ -4,8 +4,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import {
   addQuestion,
   getQuestionById,
-} from '../../../../src/lib/manage-organizations/examResultService';
-import { Question } from '../../../../src/types/manage-organizations';
+} from '@/lib/manage-organizations/examResultService';
+import { Question } from '@/types/manage-organizations';
 
 /**
  * Feature ID: MO-035
@@ -23,9 +23,10 @@ export async function POST(request: NextRequest) {
     }
     const newQuestion = await addQuestion(questionData);
     return NextResponse.json({ question: newQuestion }, { status: 201 });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
     console.error('API Error (POST /questions):', error);
-    return NextResponse.json({ message: error.message || 'Failed to add question' }, { status: 500 });
+    return NextResponse.json({ message: errorMessage || 'Failed to add question' }, { status: 500 });
   }
 }
 
@@ -52,8 +53,9 @@ export async function GET(request: NextRequest) {
     } else {
       return NextResponse.json({ message: 'Question not found' }, { status: 404 });
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
     console.error('API Error (GET /questions):', error);
-    return NextResponse.json({ message: error.message || 'Failed to retrieve question' }, { status: 500 });
+    return NextResponse.json({ message: errorMessage || 'Failed to retrieve question' }, { status: 500 });
   }
 }

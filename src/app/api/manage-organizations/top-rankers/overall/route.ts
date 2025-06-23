@@ -1,7 +1,7 @@
 // src/app/api/manage-organizations/top-rankers/overall/route.ts
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getOverallTopStudents } from '../../../../../src/lib/manage-organizations/examResultService';
+import { getOverallTopStudents } from '@/lib/manage-organizations/examResultService';
 
 /**
  * Feature ID: MO-045
@@ -25,8 +25,9 @@ export async function GET(request: NextRequest) {
 
     const topStudents = await getOverallTopStudents(schoolId, classId, sectionId, topN);
     return NextResponse.json({ topStudents }, { status: 200 });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
     console.error('API Error (GET /top-rankers/overall):', error);
-    return NextResponse.json({ message: error.message || 'Failed to retrieve overall top students' }, { status: 500 });
+    return NextResponse.json({ message: errorMessage || 'Failed to retrieve overall top students' }, { status: 500 });
   }
 }

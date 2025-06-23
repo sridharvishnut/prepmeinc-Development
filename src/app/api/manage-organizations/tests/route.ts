@@ -5,8 +5,8 @@ import {
   addTest,
   getTests,
   getTestById,
-} from '../../../../src/lib/manage-organizations/examResultService';
-import { Test } from '../../../../src/types/manage-organizations';
+} from '@/lib/manage-organizations/examResultService';
+import { Test } from '@/types/manage-organizations';
 
 /**
  * Feature ID: MO-036
@@ -24,9 +24,10 @@ export async function POST(request: NextRequest) {
     }
     const newTest = await addTest(testData);
     return NextResponse.json({ test: newTest }, { status: 201 });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
     console.error('API Error (POST /tests):', error);
-    return NextResponse.json({ message: error.message || 'Failed to add test' }, { status: 500 });
+    return NextResponse.json({ message: errorMessage || 'Failed to add test' }, { status: 500 });
   }
 }
 
@@ -62,8 +63,9 @@ export async function GET(request: NextRequest) {
       const tests = await getTests(filters);
       return NextResponse.json({ tests }, { status: 200 });
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
     console.error('API Error (GET /tests):', error);
-    return NextResponse.json({ message: error.message || 'Failed to retrieve tests' }, { status: 500 });
+    return NextResponse.json({ message: errorMessage || 'Failed to retrieve tests' }, { status: 500 });
   }
 }

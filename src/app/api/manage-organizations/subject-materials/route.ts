@@ -7,8 +7,8 @@ import {
   getSubjectMaterialById,
   updateSubjectMaterial,
   deleteSubjectMaterial,
-} from '../../../../src/lib/manage-organizations/subjectMaterialService';
-import { SubjectMaterial } from '../../../../src/types/manage-organizations';
+} from '@/lib/manage-organizations/subjectMaterialService';
+import { SubjectMaterial } from '@/types/manage-organizations';
 
 /**
  * Feature ID: MO-023
@@ -37,9 +37,10 @@ export async function GET(request: NextRequest) {
     } else {
       return NextResponse.json({ message: 'Either subject material ID or subject ID is required' }, { status: 400 });
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
     console.error('API Error (GET /subject-materials):', error);
-    return NextResponse.json({ message: error.message || 'Failed to retrieve subject materials' }, { status: 500 });
+    return NextResponse.json({ message: errorMessage || 'Failed to retrieve subject materials' }, { status: 500 });
   }
 }
 
@@ -59,9 +60,10 @@ export async function POST(request: NextRequest) {
     }
     const newMaterial = await addSubjectMaterial(materialData);
     return NextResponse.json({ material: newMaterial }, { status: 201 });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
     console.error('API Error (POST /subject-materials):', error);
-    return NextResponse.json({ message: error.message || 'Failed to add subject material' }, { status: 500 });
+    return NextResponse.json({ message: errorMessage || 'Failed to add subject material' }, { status: 500 });
   }
 }
 
@@ -81,9 +83,10 @@ export async function PUT(request: NextRequest) {
     }
     await updateSubjectMaterial(id, materialData);
     return NextResponse.json({ message: 'Subject Material updated successfully' }, { status: 200 });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
     console.error('API Error (PUT /subject-materials):', error);
-    return NextResponse.json({ message: error.message || 'Failed to update subject material' }, { status: 500 });
+    return NextResponse.json({ message: errorMessage || 'Failed to update subject material' }, { status: 500 });
   }
 }
 
@@ -103,8 +106,9 @@ export async function DELETE(request: NextRequest) {
     }
     await deleteSubjectMaterial(id);
     return NextResponse.json({ message: 'Subject Material deleted successfully' }, { status: 200 });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
     console.error('API Error (DELETE /subject-materials):', error);
-    return NextResponse.json({ message: error.message || 'Failed to delete subject material' }, { status: 500 });
+    return NextResponse.json({ message: errorMessage || 'Failed to delete subject material' }, { status: 500 });
   }
 }

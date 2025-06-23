@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI, GenerativeModel } from '@google/generative-ai';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import { NextResponse } from 'next/server';
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY; // Ensure you set this in your .env.local
@@ -29,12 +29,13 @@ ${documentText}`;
         try {
           const summaryResult = await model.generateContent(prompt);
           resultText = summaryResult.response.text();
-        } catch (error: any) {
+        } catch (error: unknown) {
+          const errorMessage = error instanceof Error ? error.message : "Unknown error";
           console.error("Error generating summary:", error);
           return NextResponse.json({
             error: "Failed to generate summary.",
-            details: error.message || "No message",
-            stack: error.stack || "No stack trace"
+            details: errorMessage,
+            stack: error instanceof Error ? error.stack : "No stack trace"
           }, { status: 500 });
         }
         break;
@@ -52,12 +53,13 @@ ${documentText}`;
         try {
           const mcqResult = await model.generateContent(prompt);
           resultText = mcqResult.response.text();
-        } catch (error: any) {
+        } catch (error: unknown) {
+          const errorMessage = error instanceof Error ? error.message : "Unknown error";
           console.error("Error generating MCQs:", error);
           return NextResponse.json({
             error: "Failed to generate MCQs.",
-            details: error.message || "No message",
-            stack: error.stack || "No stack trace"
+            details: errorMessage,
+            stack: error instanceof Error ? error.stack : "No stack trace"
           }, { status: 500 });
         }
         break;
@@ -74,12 +76,13 @@ Answer:`;
         try {
           const qnaResult = await model.generateContent(prompt);
           resultText = qnaResult.response.text();
-        } catch (error: any) {
+        } catch (error: unknown) {
+          const errorMessage = error instanceof Error ? error.message : "Unknown error";
           console.error("Error answering document question:", error);
           return NextResponse.json({
             error: "Failed to answer document question.",
-            details: error.message || "No message",
-            stack: error.stack || "No stack trace"
+            details: errorMessage,
+            stack: error instanceof Error ? error.stack : "No stack trace"
           }, { status: 500 });
         }
         break;
@@ -88,12 +91,13 @@ Answer:`;
     }
 
     return NextResponse.json({ result: resultText });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
     console.error("API Error (outer catch block):", error);
     return NextResponse.json({
       error: "Failed to process AI request.",
-      details: error.message || "No message",
-      stack: error.stack || "No stack trace"
+      details: errorMessage,
+      stack: error instanceof Error ? error.stack : "No stack trace"
     }, { status: 500 });
   }
 }

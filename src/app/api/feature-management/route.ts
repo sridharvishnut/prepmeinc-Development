@@ -6,7 +6,7 @@ import {
   getFeatureFlagById,
   getAllFeatureFlags,
   // deleteFeatureFlag, // Optional, if you decide to implement delete
-} from '../../../src/lib/featureManagementService';
+} from '@/lib/featureManagementService';
 
 /**
  * Feature ID: MO-049-API
@@ -32,9 +32,10 @@ export async function GET(request: NextRequest) {
       const featureFlags = await getAllFeatureFlags();
       return NextResponse.json({ featureFlags }, { status: 200 });
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
     console.error('API Error (GET /feature-management):', error);
-    return NextResponse.json({ message: error.message || 'Failed to retrieve feature flags' }, { status: 500 });
+    return NextResponse.json({ message: errorMessage || 'Failed to retrieve feature flags' }, { status: 500 });
   }
 }
 
@@ -54,9 +55,10 @@ export async function POST(request: NextRequest) {
     }
     const upsertedFeatureFlag = await upsertFeatureFlag(featureFlagData);
     return NextResponse.json({ featureFlag: upsertedFeatureFlag }, { status: 201 });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
     console.error('API Error (POST /feature-management):', error);
-    return NextResponse.json({ message: error.message || 'Failed to upsert feature flag' }, { status: 500 });
+    return NextResponse.json({ message: errorMessage || 'Failed to upsert feature flag' }, { status: 500 });
   }
 }
 
@@ -75,9 +77,10 @@ export async function DELETE(request: NextRequest) {
     }
     // await deleteFeatureFlag(id);
     return NextResponse.json({ message: 'Feature flag deleted successfully (not implemented)' }, { status: 200 });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
     console.error('API Error (DELETE /feature-management):', error);
-    return NextResponse.json({ message: error.message || 'Failed to delete feature flag' }, { status: 500 });
+    return NextResponse.json({ message: errorMessage || 'Failed to delete feature flag' }, { status: 500 });
   }
 }
 */

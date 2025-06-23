@@ -170,3 +170,14 @@ export interface ExamResult {
   createdAt: number;
   updatedAt: number;
 }
+
+export interface FeatureFlag {
+  id: string;
+  name: string;
+  description: string;
+  enabled: boolean;
+  enabledForSchools: { [key: string]: boolean };
+  defaultEnabled: boolean;
+  createdAt?: number;
+  updatedAt?: number;
+}

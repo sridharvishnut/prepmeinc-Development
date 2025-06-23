@@ -3,16 +3,7 @@
 "use client";
 
 import React, { useEffect, useState, useCallback } from 'react';
-import { School } from '../../types/manage-organizations'; // Assuming School type is still needed for context
-
-interface FeatureFlag {
-  id: string;
-  name: string;
-  description: string;
-  enabled: boolean;
-  enabledForSchools: { [key: string]: boolean };
-  defaultEnabled: boolean;
-}
+import { School, FeatureFlag } from '@/types/manage-organizations'; // Import FeatureFlag from central types
 
 interface FeatureFlagListProps {
   refreshTrigger: number;
@@ -44,8 +35,9 @@ const FeatureFlagList: React.FC<FeatureFlagListProps> = ({ refreshTrigger, onEdi
       }
       const data = await response.json();
       setFeatureFlags(data.featureFlags);
-    } catch (err: any) {
-      setError(err.message || 'An unexpected error occurred while fetching feature flags.');
+    } catch (err: unknown) { // Changed to unknown
+      const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred while fetching feature flags.';
+      setError(errorMessage);
       setFeatureFlags([]);
     } finally {
       setLoading(false);
@@ -59,8 +51,10 @@ const FeatureFlagList: React.FC<FeatureFlagListProps> = ({ refreshTrigger, onEdi
         const data = await response.json();
         setSchools(data.schools);
       }
-    } catch (error) {
+    } catch (error: unknown) { // Changed to unknown
       console.error('Failed to fetch schools for feature flag list:', error);
+      const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
+      setError(errorMessage); // Set error for UI display if needed
     }
   }, []);
 
