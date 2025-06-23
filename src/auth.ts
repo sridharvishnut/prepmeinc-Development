@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, signInWithPopup, UserCredential, PhoneAuthProvider, signInWithPhoneNumber, RecaptchaVerifier, ConfirmationResult, signInAnonymously, signOut } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider, signInWithRedirect, UserCredential, PhoneAuthProvider, signInWithPhoneNumber, RecaptchaVerifier, ConfirmationResult, signInAnonymously, signOut, getRedirectResult } from 'firebase/auth';
 import { firebaseConfig } from '../firebaseConfig'; // Corrected path to firebaseConfig
 
 // Initialize Firebase
@@ -7,22 +7,21 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app); // Export auth to be used in components
 
 // Gmail Sign-in function
-export const signInWithGmail = async (): Promise<UserCredential | null> => {
+export const signInWithGmail = async (): Promise<void> => {
   const provider = new GoogleAuthProvider();
   try {
-    const result = await signInWithPopup(auth, provider);
-    // The signed-in user info.
-    const user = result.user;
-    console.log("Gmail sign-in successful:", user);
-    return result;
+    // Changed to signInWithRedirect
+    await signInWithRedirect(auth, provider);
+    // This code path won't be reached immediately as the page will redirect.
+    // The result will be handled by getRedirectResult on the redirect target page.
   } catch (error: any) {
     const errorCode = error.code;
     const errorMessage = error.message;
     const email = error.customData?.email;
     const credential = GoogleAuthProvider.credentialFromError(error);
 
-    console.error("Error during Gmail sign-in:", errorCode, errorMessage, email, credential);
-    return null;
+    console.error("Error during Gmail sign-in redirect setup:", errorCode, errorMessage, email, credential);
+    throw error; // Re-throw to be handled by calling component if needed
   }
 };
 

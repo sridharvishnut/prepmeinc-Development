@@ -8,7 +8,7 @@ const app = initializeApp(firebaseConfig);
 export const storage = getStorage(app);
 export const db = getFirestore(app);
 
-export const uploadDocument = async (file: File, userId: string, category: string, onProgress: (progress: number) => void) => {
+export const uploadDocument = async (file: File, userId: string, category: string, onProgress: (progress: number) => void): Promise<string> => {
   if (!userId) {
     throw new Error("User is not authenticated.");
   }

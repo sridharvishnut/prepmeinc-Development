@@ -7,6 +7,7 @@ import { Subject } from '../../../types/manage-organizations';
 
 interface SubjectFormProps {
   schoolId: string | null; // The currently selected school
+  classId: string | null; // The currently selected class (NEWLY ADDED)
   onSubjectAdded: () => void;
 }
 
@@ -18,7 +19,7 @@ interface SubjectFormProps {
  * Current Module Implemented: Manage-Organizations (src/components/manage-organizations/subjects)
  * Module to be implemented: Manage-Organizations (Integration into Subjects & Materials tab)
  */
-const SubjectForm: React.FC<SubjectFormProps> = ({ schoolId, onSubjectAdded }) => {
+const SubjectForm: React.FC<SubjectFormProps> = ({ schoolId, classId, onSubjectAdded }) => {
   const [name, setName] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [isCustom, setIsCustom] = useState<boolean>(true); // Default to custom
@@ -28,8 +29,8 @@ const SubjectForm: React.FC<SubjectFormProps> = ({ schoolId, onSubjectAdded }) =
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!schoolId) {
-      setError('Please select a school first.');
+    if (!schoolId || !classId) { // Added classId to validation
+      setError('Please select a school and a class first.');
       return;
     }
 
@@ -45,6 +46,7 @@ const SubjectForm: React.FC<SubjectFormProps> = ({ schoolId, onSubjectAdded }) =
         },
         body: JSON.stringify({
           schoolId,
+          classId, // Pass classId to the API
           name,
           description,
           isCustom,
@@ -82,7 +84,7 @@ const SubjectForm: React.FC<SubjectFormProps> = ({ schoolId, onSubjectAdded }) =
             onChange={(e) => setName(e.target.value)}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             required
-            disabled={!schoolId}
+            disabled={!schoolId || !classId} // Disabled if no school or class selected
           />
         </div>
         <div>
@@ -93,7 +95,7 @@ const SubjectForm: React.FC<SubjectFormProps> = ({ schoolId, onSubjectAdded }) =
             onChange={(e) => setDescription(e.target.value)}
             rows={2}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-            disabled={!schoolId}
+            disabled={!schoolId || !classId} // Disabled if no school or class selected
           />
         </div>
         <div className="flex items-center">
@@ -104,7 +106,7 @@ const SubjectForm: React.FC<SubjectFormProps> = ({ schoolId, onSubjectAdded }) =
             checked={isCustom}
             onChange={(e) => setIsCustom(e.target.checked)}
             className="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded"
-            disabled={!schoolId}
+            disabled={!schoolId || !classId} // Disabled if no school or class selected
           />
           <label htmlFor="isCustom" className="ml-2 block text-sm text-gray-900">Custom Subject (Can be added by School Admin)</label>
         </div>
@@ -113,7 +115,7 @@ const SubjectForm: React.FC<SubjectFormProps> = ({ schoolId, onSubjectAdded }) =
         <button
           type="submit"
           className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
-          disabled={loading || !schoolId}
+          disabled={loading || !schoolId || !classId} // Disabled if loading or no school/class selected
         >
           {loading ? 'Adding Subject...' : 'Add Subject'}
         </button>

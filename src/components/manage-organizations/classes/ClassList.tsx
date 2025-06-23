@@ -29,22 +29,28 @@ const ClassList: React.FC<ClassListProps> = ({ schoolId, refreshTrigger, onSelec
     if (!schoolId) {
       setClasses([]);
       setLoading(false);
+      console.log("ClassList: No schoolId provided, skipping fetch."); // ADDED LOG
       return;
     }
 
     setLoading(true);
     setError(null);
+    console.log(`ClassList: Fetching classes for schoolId: ${schoolId}`); // ADDED LOG
     try {
       const response = await fetch(`/api/manage-organizations/classes?schoolId=${schoolId}`);
+      console.log("ClassList: API Response status:", response.status); // ADDED LOG
       if (!response.ok) {
         const errorData = await response.json();
+        console.error("ClassList: API Error Data:", errorData); // ADDED LOG
         throw new Error(errorData.message || 'Failed to fetch classes');
       }
       const data = await response.json();
+      console.log("ClassList: Fetched data:", data); // ADDED LOG
       setClasses(data.classes);
     } catch (err: any) {
       setError(err.message || 'An unexpected error occurred while fetching classes.');
       setClasses([]);
+      console.error("ClassList: Fetch error:", err); // ADDED LOG
     } finally {
       setLoading(false);
     }

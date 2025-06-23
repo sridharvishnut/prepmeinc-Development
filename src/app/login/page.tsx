@@ -1,8 +1,8 @@
 'use client';
-import { useState, useEffect } from 'react';
-import { signInWithGmail, setUpRecaptcha, signInWithPhone, verifyOtp, signInAsGuest } from '@/auth'; // Adjust path as needed
+import { useState, useEffect } from 'react'; // Removed useRef
+import { signInWithGmail, setUpRecaptcha, signInWithPhone, verifyOtp, signInAsGuest, auth } from '@/auth';
 import { useRouter } from 'next/navigation';
-import { ConfirmationResult } from 'firebase/auth';
+import { ConfirmationResult, getRedirectResult, GoogleAuthProvider } from 'firebase/auth'; // Added getRedirectResult, GoogleAuthProvider
 
 export default function LoginPage() {
   const router = useRouter();
@@ -12,21 +12,51 @@ export default function LoginPage() {
   const [showOtpInput, setShowOtpInput] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Handle redirect result for Google Sign-In
   useEffect(() => {
+    const handleRedirectResult = async () => {
+      console.log("LoginPage: Checking for redirect result...");
+      try {
+        const result = await getRedirectResult(auth);
+        if (result) {
+          const user = result.user;
+          console.log("LoginPage: Redirect sign-in successful. User:", user);
+          if (user) {
+            console.log("LoginPage: User authenticated, redirecting to /.");
+            router.push('/'); // Redirect to home or dashboard after successful login
+          } else {
+            console.warn("LoginPage: Redirect result found but user is null.");
+            setError("Authentication successful but user data not available.");
+          }
+        } else {
+          console.log("LoginPage: No redirect result found.");
+        }
+      } catch (err: any) {
+        const errorCode = err.code;
+        const errorMessage = err.message;
+        const email = err.customData?.email;
+        const credential = GoogleAuthProvider.credentialFromError(err);
+        console.error("LoginPage: Error during redirect sign-in:", errorCode, errorMessage, email, credential);
+        setError(errorMessage || 'An error occurred during sign-in.');
+      }
+    };
+
+    handleRedirectResult();
+
+    // Set up reCAPTCHA for phone authentication
     if (typeof window !== 'undefined') {
       setUpRecaptcha('recaptcha-container');
     }
-  }, []);
+  }, [router]); // Include router in dependency array
 
   const handleGmailSignIn = async () => {
     setError(null);
     try {
-      const result = await signInWithGmail();
-      if (result) {
-        router.push('/');
-      }
-    } catch (err) {
-      setError('Gmail login failed.');
+      console.log("LoginPage: Initiating Gmail sign-in redirect..."); // Updated log
+      await signInWithGmail(); // signInWithGmail now initiates a redirect
+      // The page will redirect, and the useEffect above will handle the result.
+    } catch (err: any) {
+      setError(err.message || 'Gmail login failed.');
       console.error('Gmail login failed:', err);
     }
   };
@@ -98,7 +128,6 @@ export default function LoginPage() {
             onClick={handleGmailSignIn}
             className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-300"
           >
-            <img src="/google_logo.svg" alt="Google Logo" className="h-5 w-5 mr-2" />
             Sign in with Gmail
           </button>
 
