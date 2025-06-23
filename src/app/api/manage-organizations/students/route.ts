@@ -7,8 +7,8 @@ import {
   getStudentById,
   updateStudent,
   deleteStudent,
-} from '../../../../src/lib/manage-organizations/studentService';
-import { Student } from '../../../../src/types/manage-organizations';
+} from '@/lib/manage-organizations/studentService';
+import { Student } from '@/types/manage-organizations';
 
 /**
  * Feature ID: MO-016

@@ -74,7 +74,7 @@ const FeatureFlagForm: React.FC<FeatureFlagFormProps> = ({
       setDefaultEnabled(false);
       setEnabledForSchools({});
     }
-  }, [initialData]);
+  }, [initialData?.id]); // Changed dependency to initialData?.id
 
   const handleSchoolToggle = (schoolId: string, isChecked: boolean) => {
     setEnabledForSchools((prev) => ({
@@ -185,8 +185,8 @@ const FeatureFlagForm: React.FC<FeatureFlagFormProps> = ({
               name="defaultEnabledOption"
               type="checkbox"
               checked={defaultEnabled}
-              onChange={(e) => setDefaultEnabled(e.target.checked)}
-              className="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded"
+              onChange={(e) => setDefaultEnabled(e.target.checked)}\
+              className="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded"\
             />
             <label htmlFor="defaultEnabled" className="ml-2 block text-sm text-gray-900">Default Enabled for New Schools</label>
           </div>

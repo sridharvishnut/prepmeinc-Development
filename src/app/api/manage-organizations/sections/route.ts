@@ -7,8 +7,8 @@ import {
   getSectionById,
   updateSection,
   deleteSection,
-} from '../../../../src/lib/manage-organizations/sectionService';
-import { Section } from '../../../../src/types/manage-organizations';
+} from '@/lib/manage-organizations/sectionService';
+import { Section } from '@/types/manage-organizations';
 
 /**
  * Feature ID: MO-013

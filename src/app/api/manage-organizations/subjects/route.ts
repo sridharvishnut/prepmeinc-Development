@@ -7,8 +7,8 @@ import {
   getSubjectById,
   updateSubject,
   deleteSubject,
-} from '../../../../src/lib/manage-organizations/subjectService';
-import { Subject } from '../../../../src/types/manage-organizations';
+} from '@/lib/manage-organizations/subjectService';
+import { Subject } from '@/types/manage-organizations';
 
 /**
  * Feature ID: MO-022

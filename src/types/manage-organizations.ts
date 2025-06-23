@@ -52,6 +52,12 @@ export interface Student {
   parentName: string;
   parentContact: string;
   parentEmail: string;
+  contactNumber?: string; // New: Student's contact number
+  email?: string; // New: Student's email
+  address?: string; // New: Student's address
+  dateOfJoining?: number; // New: Timestamp for date of joining
+  dateOfExit?: number; // New: Timestamp for date of exit from school
+  yearPassedOut?: number; // New: Year student passed out
   createdAt: number;
   updatedAt: number;
 }

@@ -7,8 +7,8 @@ import {
   getClassById,
   updateClass,
   deleteClass,
-} from '../../../../src/lib/manage-organizations/classService';
-import { Class } from '../../../../src/types/manage-organizations';
+} from '@/lib/manage-organizations/classService';
+import { Class } from '@/types/manage-organizations';
 
 /**
  * Feature ID: MO-008

@@ -7,8 +7,8 @@ import {
   getSchoolById,
   updateSchool,
   deleteSchool,
-} from '../../../../src/lib/manage-organizations/schoolService';
-import { School } from '../../../../src/types/manage-organizations';
+} from '@/lib/manage-organizations/schoolService';
+import { School } from '@/types/manage-organizations';
 
 /**
  * Feature ID: MO-003

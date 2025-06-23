@@ -143,6 +143,7 @@ const ManageOrganizationsPage: React.FC = () => {
     setRefreshSectionList((prev) => prev + 1); // Use shared section refresh
   };
 
+  // New handler for selecting a section for student management
   const handleSelectStudentSection = (sectionId: string | null) => {
     setSelectedStudentSectionId(sectionId);
     setRefreshStudentList((prev) => prev + 1); // Trigger student list refresh
@@ -170,7 +171,7 @@ const ManageOrganizationsPage: React.FC = () => {
   // Handlers for selecting items in User Management tab
   const handleSelectUserSchool = (schoolId: string | null) => {
     setSelectedUserSchoolId(schoolId);
-    setRefreshUserList((prev) => prev + 1); // Trigger user list refresh
+    setRefreshUserList((prev) => prev + 1);
   };
 
   // Handler for Exam Result Filters change
@@ -379,7 +380,12 @@ const ManageOrganizationsPage: React.FC = () => {
                 {selectedClassId && (
                   <div className="mt-6">
                     <SectionForm schoolId={selectedSchoolId} classId={selectedClassId} onSectionAdded={handleSectionAdded} />
-                    <SectionList classId={selectedClassId} refreshTrigger={refreshSectionList} />
+                    <SectionList
+                      classId={selectedClassId}
+                      refreshTrigger={refreshSectionList}
+                      onSelectSection={handleSelectStudentSection} // Re-use for the section list within classes tab
+                      selectedSectionId={selectedStudentSectionId} // Re-use for highlighting
+                    />
                   </div>
                 )}
                 {!selectedSchoolId && (
@@ -416,6 +422,8 @@ const ManageOrganizationsPage: React.FC = () => {
                 <SectionList
                   classId={selectedStudentClassId}
                   refreshTrigger={refreshSectionList}
+                  onSelectSection={handleSelectStudentSection}
+                  selectedSectionId={selectedStudentSectionId}
                 />
                 {selectedStudentClassId && !selectedStudentSectionId && (
                   <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-md text-yellow-800">

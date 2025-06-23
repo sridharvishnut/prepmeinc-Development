@@ -123,6 +123,13 @@ export const updateStudent = async (id: string, studentData: Partial<Omit<Studen
  */
 export const deleteStudent = async (id: string): Promise<void> => {
   try {
+    // Deletion is now disallowed for school admins
+    // This function will remain but its API endpoint will restrict school admin access.
+    // Application admins can still use this via backend tools if needed.
+
+    // For now, if the request is coming from a context where school admins initiate it,
+    // the API route (src/app/api/manage-organizations/students/route.ts) will handle the permission.
+    // The service layer itself does not perform permission checks, assuming the caller has permission.
     const docRef = doc(db, 'students', id);
     await deleteDoc(docRef);
   } catch (error) {

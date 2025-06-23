@@ -35,6 +35,13 @@ const StudentForm: React.FC<StudentFormProps> = ({
   const [parentName, setParentName] = useState<string>('');
   const [parentContact, setParentContact] = useState<string>('');
   const [parentEmail, setParentEmail] = useState<string>('');
+  const [contactNumber, setContactNumber] = useState<string>(''); // New
+  const [email, setEmail] = useState<string>(''); // New
+  const [address, setAddress] = useState<string>(''); // New
+  const [dateOfJoining, setDateOfJoining] = useState<string>(''); // New: YYYY-MM-DD
+  const [dateOfExit, setDateOfExit] = useState<string>(''); // New: YYYY-MM-DD
+  const [yearPassedOut, setYearPassedOut] = useState<string>(''); // New
+  
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -52,6 +59,12 @@ const StudentForm: React.FC<StudentFormProps> = ({
       setParentName('');
       setParentContact('');
       setParentEmail('');
+      setContactNumber('');
+      setEmail('');
+      setAddress('');
+      setDateOfJoining('');
+      setDateOfExit('');
+      setYearPassedOut('');
       setError(null);
       setSuccess(null);
     }
@@ -83,6 +96,12 @@ const StudentForm: React.FC<StudentFormProps> = ({
         parentName,
         parentContact,
         parentEmail,
+        contactNumber: contactNumber || undefined, // New: Optional
+        email: email || undefined, // New: Optional
+        address: address || undefined, // New: Optional
+        dateOfJoining: dateOfJoining ? new Date(dateOfJoining).getTime() : undefined, // New: Optional timestamp
+        dateOfExit: dateOfExit ? new Date(dateOfExit).getTime() : undefined, // New: Optional timestamp
+        yearPassedOut: yearPassedOut ? parseInt(yearPassedOut) : undefined, // New: Optional number
       };
 
       const response = await fetch('/api/manage-organizations/students', {
@@ -110,6 +129,12 @@ const StudentForm: React.FC<StudentFormProps> = ({
       setParentName('');
       setParentContact('');
       setParentEmail('');
+      setContactNumber('');
+      setEmail('');
+      setAddress('');
+      setDateOfJoining('');
+      setDateOfExit('');
+      setYearPassedOut('');
 
       onStudentAdded(); // Notify parent component to refresh list
     } catch (err: any) {
@@ -235,6 +260,73 @@ const StudentForm: React.FC<StudentFormProps> = ({
               onChange={(e) => setParentEmail(e.target.value)}
               className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
               required
+              disabled={isFormDisabled}
+            />
+          </div>
+          {/* New fields added below */}
+          <div>
+            <label htmlFor="contactNumber" className="block text-sm font-medium text-gray-700">Student Contact Number</label>
+            <input
+              type="tel"
+              id="contactNumber"
+              value={contactNumber}
+              onChange={(e) => setContactNumber(e.target.value)}
+              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              disabled={isFormDisabled}
+            />
+          </div>
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700">Student Email ID</label>
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              disabled={isFormDisabled}
+            />
+          </div>
+          <div className="md:col-span-2">
+            <label htmlFor="address" className="block text-sm font-medium text-gray-700">Student Address</label>
+            <textarea
+              id="address"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              rows={2}
+              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              disabled={isFormDisabled}
+            />
+          </div>
+          <div>
+            <label htmlFor="dateOfJoining" className="block text-sm font-medium text-gray-700">Date of Joining</label>
+            <input
+              type="date"
+              id="dateOfJoining"
+              value={dateOfJoining}
+              onChange={(e) => setDateOfJoining(e.target.value)}
+              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              disabled={isFormDisabled}
+            />
+          </div>
+          <div>
+            <label htmlFor="dateOfExit" className="block text-sm font-medium text-gray-700">Date of Exit from School</label>
+            <input
+              type="date"
+              id="dateOfExit"
+              value={dateOfExit}
+              onChange={(e) => setDateOfExit(e.target.value)}
+              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              disabled={isFormDisabled}
+            />
+          </div>
+          <div>
+            <label htmlFor="yearPassedOut" className="block text-sm font-medium text-gray-700">Year Passed Out</label>
+            <input
+              type="number"
+              id="yearPassedOut"
+              value={yearPassedOut}
+              onChange={(e) => setYearPassedOut(e.target.value)}
+              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
               disabled={isFormDisabled}
             />
           </div>

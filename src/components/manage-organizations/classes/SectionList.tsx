@@ -8,6 +8,8 @@ import { Section } from '../../../types/manage-organizations';
 interface SectionListProps {
   classId: string | null;
   refreshTrigger: number;
+  onSelectSection: (sectionId: string) => void; // New prop for selecting a section
+  selectedSectionId: string | null; // New prop to highlight the selected section
 }
 
 /**
@@ -18,7 +20,12 @@ interface SectionListProps {
  * Current Module Implemented: Manage-Organizations (src/components/manage-organizations/classes)
  * Module to be implemented: Manage-Organizations (Integration into Classes & Sections tab, Edit/Delete functionality)
  */
-const SectionList: React.FC<SectionListProps> = ({ classId, refreshTrigger }) => {
+const SectionList: React.FC<SectionListProps> = ({
+  classId,
+  refreshTrigger,
+  onSelectSection,
+  selectedSectionId,
+}) => {
   const [sections, setSections] = useState<Section[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -80,7 +87,11 @@ const SectionList: React.FC<SectionListProps> = ({ classId, refreshTrigger }) =>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {sections.map((section) => (
-                <tr key={section.id}>
+                <tr
+                  key={section.id}
+                  onClick={() => onSelectSection(section.id)}
+                  className={`cursor-pointer hover:bg-gray-100 ${selectedSectionId === section.id ? 'bg-blue-50' : ''}`}
+                >
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{section.name}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     {/* Add edit/delete buttons here later */}
