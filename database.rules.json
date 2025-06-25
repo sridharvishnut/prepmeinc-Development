@@ -1,16 +1,30 @@
-{
-  "rules": {
-    "documents": {
-      "$uid": {
-        ".read": "$uid === auth.uid",
-        ".write": "$uid === auth.uid"
-      }
-    },
-    "admin": {
-      "$uid": {
-        ".read": "auth.token.email === 'vishnusridhar.tpm@gmail.com'",
-        ".write": "auth.token.email === 'vishnusridhar.tpm@gmail.com'"
-      }
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Rules for the 'documents' collection
+    match /documents/{documentId} {
+      // Allow authenticated users to read any document in the 'documents' collection
+      allow read: if request.auth != null;
+
+      // Allow authenticated users to create new documents in the 'documents' collection
+      allow create: if request.auth != null;
+
+      // Allow authenticated users to update or delete their own documents
+      allow update, delete: if request.auth != null && resource.data.userId == request.auth.uid;
     }
+
+    // Rules for the 'schools' collection
+    match /schools/{schoolId} {
+      // Allow authenticated users to read any document in the 'schools' collection
+      allow read: if request.auth != null;
+    }
+
+    // IMPORTANT: If you have an 'admin' collection in Firestore, you need a separate 'match' block for it.
+    // The previous 'admin' rules were for Realtime Database. Below is an example for Firestore.
+    /*
+    match /admin/{userId} {
+      allow read, write: if request.auth != null && request.auth.token.email == 'vishnusridhar.tpm@gmail.com';
+    }
+    */
   }
 }

@@ -9,7 +9,7 @@ interface StudentListProps {
   schoolId: string | null;
   classId: string | null;
   sectionId: string | null;
-  refreshTrigger: number;
+  refreshTrigger: number; // Added missing prop
 }
 
 /**

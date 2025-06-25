@@ -9,6 +9,7 @@ interface SchoolListProps {
   refreshTrigger: number; // A prop to trigger data refresh
   onSelectSchool: (schoolId: string | null) => void; // Callback for selecting a school
   selectedSchoolId: string | null; // Currently selected school ID from parent
+  showSelectAllOption?: boolean; // New optional prop to show 'All Schools' option
 }
 
 /**
@@ -19,7 +20,7 @@ interface SchoolListProps {
  * Current Module Implemented: Manage-Organizations (src/components/manage-organizations/schools)
  * Module to be implemented: (None - core enhancement)
  */
-const SchoolList: React.FC<SchoolListProps> = ({ refreshTrigger, onSelectSchool, selectedSchoolId }) => {
+const SchoolList: React.FC<SchoolListProps> = ({ refreshTrigger, onSelectSchool, selectedSchoolId, showSelectAllOption }) => {
   const [schools, setSchools] = useState<School[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -73,6 +74,16 @@ const SchoolList: React.FC<SchoolListProps> = ({ refreshTrigger, onSelectSchool,
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
+              {showSelectAllOption && (
+                <tr
+                  className={`${
+                    selectedSchoolId === null ? 'bg-blue-50' : ''
+                  } hover:bg-gray-50 cursor-pointer`}
+                  onClick={() => onSelectSchool(null)}
+                >
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" colSpan={5}>All Schools</td>
+                </tr>
+              )}
               {schools.map((school) => (
                 <tr
                   key={school.id}

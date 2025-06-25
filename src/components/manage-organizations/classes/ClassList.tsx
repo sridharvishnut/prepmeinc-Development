@@ -10,6 +10,7 @@ interface ClassListProps {
   refreshTrigger: number;
   onSelectClass: (classId: string | null) => void;
   selectedClassId: string | null;
+  showSelectAllOption?: boolean; 
 }
 
 /**
@@ -20,7 +21,7 @@ interface ClassListProps {
  * Current Module Implemented: Manage-Organizations (src/components/manage-organizations/classes)
  * Module to be implemented: Manage-Organizations (Integration into Classes & Sections tab, Edit/Delete functionality)
  */
-const ClassList: React.FC<ClassListProps> = ({ schoolId, refreshTrigger, onSelectClass, selectedClassId }) => {
+const ClassList: React.FC<ClassListProps> = ({ schoolId, refreshTrigger, onSelectClass, selectedClassId, showSelectAllOption }) => {
   const [classes, setClasses] = useState<Class[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -81,6 +82,16 @@ const ClassList: React.FC<ClassListProps> = ({ schoolId, refreshTrigger, onSelec
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
+              {showSelectAllOption && (
+                <tr
+                  className={`${
+                    selectedClassId === null ? 'bg-blue-50' : ''
+                  } hover:bg-gray-50 cursor-pointer`}
+                  onClick={() => onSelectClass(null)}
+                >
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" colSpan={2}>All Classes</td>
+                </tr>
+              )}
               {classes.map((classItem) => (
                 <tr
                   key={classItem.id}

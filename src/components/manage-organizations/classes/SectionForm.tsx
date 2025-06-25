@@ -8,7 +8,7 @@ import { Section } from '../../../types/manage-organizations';
 interface SectionFormProps {
   schoolId: string | null;
   classId: string | null;
-  onSectionAdded: () => void;
+  onSectionAdded: () => void; // Prop name corrected as per plan
 }
 
 /**

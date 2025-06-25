@@ -7,9 +7,9 @@ import { Student, School, Class, Section } from '../../../types/manage-organizat
 
 interface StudentFormProps {
   onStudentAdded: () => void;
-  selectedSchoolId: string | null;
-  selectedClassId: string | null;
-  selectedSectionId: string | null;
+  schoolId: string | null; // Added missing prop
+  classId: string | null; // Added missing prop
+  sectionId: string | null; // Added missing prop
 }
 
 /**
@@ -22,9 +22,9 @@ interface StudentFormProps {
  */
 const StudentForm: React.FC<StudentFormProps> = ({
   onStudentAdded,
-  selectedSchoolId,
-  selectedClassId,
-  selectedSectionId,
+  schoolId,
+  classId,
+  sectionId,
 }) => {
   const [firstName, setFirstName] = useState<string>('');
   const [lastName, setLastName] = useState<string>('');
@@ -49,7 +49,7 @@ const StudentForm: React.FC<StudentFormProps> = ({
   // Reset form fields when school/class/section selection changes
   useEffect(() => {
     // Only reset if a specific ID is no longer selected, indicating a change in context
-    if (!selectedSchoolId || !selectedClassId || !selectedSectionId) {
+    if (!schoolId || !classId || !sectionId) {
       setFirstName('');
       setLastName('');
       setDateOfBirth('');
@@ -68,12 +68,12 @@ const StudentForm: React.FC<StudentFormProps> = ({
       setError(null);
       setSuccess(null);
     }
-  }, [selectedSchoolId, selectedClassId, selectedSectionId]);
+  }, [schoolId, classId, sectionId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!selectedSchoolId || !selectedClassId || !selectedSectionId) {
+    if (!schoolId || !classId || !sectionId) {
       setError('Please select a School, Class, and Section before adding a student.');
       return;
     }
@@ -84,9 +84,9 @@ const StudentForm: React.FC<StudentFormProps> = ({
 
     try {
       const studentData: Omit<Student, 'id' | 'createdAt' | 'updatedAt'> = {
-        schoolId: selectedSchoolId,
-        classId: selectedClassId,
-        sectionId: selectedSectionId,
+        schoolId: schoolId,
+        classId: classId,
+        sectionId: sectionId,
         firstName,
         lastName,
         dateOfBirth: new Date(dateOfBirth).getTime(), // Convert date string to timestamp
@@ -144,7 +144,7 @@ const StudentForm: React.FC<StudentFormProps> = ({
     }
   };
 
-  const isFormDisabled = !selectedSchoolId || !selectedClassId || !selectedSectionId;
+  const isFormDisabled = !schoolId || !classId || !sectionId;
 
   return (
     <div className="bg-white p-6 rounded-lg shadow mb-6">

@@ -7,7 +7,7 @@ import { SubjectMaterial } from '../../../types/manage-organizations';
 
 interface SubjectMaterialListProps {
   subjectId: string | null;
-  refreshTrigger: number;
+  refreshTrigger?: number; // Made optional as per plan
 }
 
 /**

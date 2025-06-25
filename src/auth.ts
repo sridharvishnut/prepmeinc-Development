@@ -1,98 +1,121 @@
-import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, signInWithPopup, UserCredential, PhoneAuthProvider, signInWithPhoneNumber, RecaptchaVerifier, ConfirmationResult, signInAnonymously, signOut } from 'firebase/auth';
-import { firebaseConfig } from '../firebaseConfig'; // Corrected path to firebaseConfig
+import { app } from './firebaseUtils';
+import {
+  getAuth,
+  initializeAuth,
+  browserLocalPersistence,
+  GoogleAuthProvider,
+  signInWithRedirect,
+  signInAnonymously,
+  signOut,
+  isSignInWithEmailLink,
+  sendSignInLinkToEmail,
+  signInWithEmailLink,
+  Auth
+} from 'firebase/auth';
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app); // Export auth to be used in components
+let clientAuthInstance: Auth | null = null;
 
-// Gmail Sign-in function
-export const signInWithGmail = async (): Promise<UserCredential | null> => {
+export const getClientAuth = (): Auth | null => {
+  if (typeof window === "undefined") {
+    // On the server, return null gracefully. react-firebase-hooks can handle this.
+    return null;
+  }
+
+  if (!clientAuthInstance) {
+    try {
+      clientAuthInstance = getAuth(app);
+    } catch (e) {
+      console.log("Firebase Auth: No existing auth instance, initializing a new one.");
+      clientAuthInstance = initializeAuth(app, {
+        persistence: browserLocalPersistence,
+      });
+    }
+
+    if (process.env.NODE_ENV === "development" && clientAuthInstance) {
+      try {
+        (clientAuthInstance.settings as any).appVerificationDisabledForTesting = true;
+        console.log("Firebase Auth: appVerificationDisabledForTesting is set to true for development.");
+      } catch (e) {
+        console.warn("auth.settings not available or failed to set test mode (likely not using emulator or unexpected state)", e);
+      }
+    }
+  }
+
+  // After initialization attempts, if still null, throw or handle as appropriate
+  // For react-firebase-hooks, returning null here is fine for SSR.
+  console.log("Auth instance retrieved by getClientAuth:", clientAuthInstance);
+  return clientAuthInstance;
+};
+
+export const signInWithGmail = async () => {
+  const auth = getClientAuth();
+  if (!auth) throw new Error("Auth not initialized for sign-in.");
   const provider = new GoogleAuthProvider();
   try {
-    const result = await signInWithPopup(auth, provider);
-    // The signed-in user info.
-    const user = result.user;
-    console.log("Gmail sign-in successful:", user);
-    return result;
+    await signInWithRedirect(auth, provider);
+    console.log('Initiated Gmail Sign-in with redirect.');
   } catch (error: any) {
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    const email = error.customData?.email;
-    const credential = GoogleAuthProvider.credentialFromError(error);
-
-    console.error("Error during Gmail sign-in:", errorCode, errorMessage, email, credential);
-    return null;
+    console.error('❌ Gmail login error (redirect flow):', error.code, error.message);
+    throw error;
   }
 };
 
-// --- Phone Number (OTP) Sign-in ---
-let recaptchaVerifier: RecaptchaVerifier | null = null;
-
-export const setUpRecaptcha = (containerId: string) => {
-  if (typeof window !== 'undefined' && !recaptchaVerifier) {
-    recaptchaVerifier = new RecaptchaVerifier(auth, containerId, {
-      'size': 'invisible',
-      'callback': (response: any) => {
-        // reCAPTCHA solved, allow signInWithPhoneNumber.
-        console.log("reCAPTCHA solved:", response);
-      },
-      'expired-callback': () => {
-        // Response expired. Ask user to solve reCAPTCHA again.
-        console.log("reCAPTCHA expired.");
-      }
-    });
-    recaptchaVerifier.render();
+export const sendEmailLink = async (email: string, redirectUrl: string) => {
+  const auth = getClientAuth();
+  if (!auth) throw new Error("Auth not initialized for sending email link.");
+  const actionCodeSettings = {
+    url: redirectUrl,
+    handleCodeInApp: true,
+  };
+  try {
+    await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+    window.localStorage.setItem('emailForSignIn', email);
+    console.log('✅ Sign-in link sent to:', email);
+  } catch (error: any) {
+    console.error('❌ Error sending sign-in link:', error.code, error.message);
+    throw error;
   }
 };
 
-export const signInWithPhone = async (phoneNumber: string): Promise<ConfirmationResult | null> => {
-  if (!recaptchaVerifier) {
-    console.error("reCAPTcha verifier not initialized.");
-    return null;
+export const completeSignInWithEmailLink = async (email: string, emailLink: string) => {
+  const auth = getClientAuth();
+  if (!auth) throw new Error("Auth not initialized for completing email link sign-in.");
+
+  if (!isSignInWithEmailLink(auth, emailLink)) {
+    throw new Error("Invalid email link.");
   }
   try {
-    const confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier);
-    console.log("OTP sent successfully!");
-    return confirmationResult;
+    const result = await signInWithEmailLink(auth, email, emailLink);
+    window.localStorage.removeItem('emailForSignIn');
+    console.log('✅ Signed in with email link:', result.user);
+    return result;
   } catch (error: any) {
-    console.error("Error sending OTP:", error.code, error.message);
-    // Handle specific errors like 'auth/too-many-requests'
-    return null;
+    console.error('❌ Error signing in with email link:', error.code, error.message);
+    throw error;
   }
 };
 
-export const verifyOtp = async (confirmationResult: ConfirmationResult, otp: string): Promise<UserCredential | null> => {
-    try {
-        const result = await confirmationResult.confirm(otp);
-        console.log("Phone sign-in successful:", result.user);
-        return result;
-    } catch (error: any) {
-        console.error("Error verifying OTP:", error.code, error.message);
-        // Handle specific errors like 'auth/invalid-verification-code'
-        return null;
-    }
-};
-
-// --- Guest (Anonymous) Sign-in ---
-export const signInAsGuest = async (): Promise<UserCredential | null> => {
+export const signInAsGuest = async () => {
+  const auth = getClientAuth();
+  if (!auth) throw new Error("Auth not initialized for guest sign-in.");
   try {
     const result = await signInAnonymously(auth);
-    console.log("Guest sign-in successful:", result.user);
+    console.log('Guest User UID for admin setup:', result.user.uid);
     return result;
-  } catch (error: any) {
-    console.error("Error during Guest sign-in:", error.code, error.message);
-    return null;
+  } catch (error) {
+    console.error('Error signing in as guest:', error);
+    throw error;
   }
 };
 
-// --- Sign Out ---
-export const signOutUser = async (): Promise<void> => {
+export const signOutUser = async () => {
+  const auth = getClientAuth();
+  if (!auth) throw new Error("Auth not initialized for sign out.");
   try {
     await signOut(auth);
-    console.log("User signed out successfully.");
+    console.log('✅ User signed out successfully');
   } catch (error: any) {
-    console.error("Error during sign out:", error.code, error.message);
-    throw error; // Re-throw to be handled by the calling component
+    console.error('❌ Sign out error:', error.code, error.message);
+    throw error;
   }
 };

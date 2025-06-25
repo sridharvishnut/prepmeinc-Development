@@ -79,8 +79,8 @@ export const getSubjectMaterialsBySubjectId = async (subjectId: string): Promise
       materials.push({ id: doc.id, ...doc.data() } as SubjectMaterial);
     });
     return materials;
-  } catch (error) {
-    console.error(`Error getting subject materials for subject ID ${subjectId}:`, error);
+  } catch (error: any) {
+    console.error(`Error getting subject materials for subject ID ${subjectId}:`, JSON.stringify(error, Object.getOwnPropertyNames(error)));
     throw new Error(`Failed to retrieve subject materials for subject ID ${subjectId}.`);
   }
 };

@@ -8,6 +8,9 @@ import { SchoolUser, UserRoleType } from '../../../types/manage-organizations';
 interface UserListProps {
   schoolId: string | null;
   refreshTrigger: number;
+  onSelectUser?: (userId: string | null) => void; // Added optional prop
+  selectedUserId?: string | null; // Added optional prop
+  showSelectAllOption?: boolean; // Added optional prop
 }
 
 /**
@@ -21,6 +24,9 @@ interface UserListProps {
 const UserList: React.FC<UserListProps> = ({
   schoolId,
   refreshTrigger,
+  onSelectUser,
+  selectedUserId,
+  showSelectAllOption,
 }) => {
   const [users, setUsers] = useState<SchoolUser[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -115,11 +121,25 @@ const UserList: React.FC<UserListProps> = ({
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
+              {showSelectAllOption && (
+                <tr
+                  className={`${
+                    selectedUserId === null ? 'bg-blue-50' : ''
+                  } hover:bg-gray-50 cursor-pointer`}
+                  onClick={() => onSelectUser && onSelectUser(null)}
+                >
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" colSpan={5}>All Users</td>
+                </tr>
+              )}
               {users.map((user) => (
-                <tr key={user.id}>
+                <tr
+                  key={user.id}
+                  onClick={() => onSelectUser && onSelectUser(user.id)}
+                  className={`cursor-pointer hover:bg-gray-100 ${selectedUserId === user.id ? 'bg-blue-50' : ''}`}
+                >
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{user.firstName} {user.lastName}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.email}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.role.replace(/_/g, ' ').replace(/\w/g, c => c.toUpperCase())}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.role.replace(/_/g, ' ').replace(/ \w/g, c => c.toUpperCase())}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.isActive ? 'Active' : 'Inactive'}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     {/* Add edit/delete buttons here later */}

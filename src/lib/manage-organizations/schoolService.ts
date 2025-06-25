@@ -14,6 +14,10 @@ import {
   where,
 } from 'firebase/firestore';
 
+// --- START DIAGNOSTIC LOGS for schoolService.ts ---
+console.log("schoolService.ts: db instance received:", db ? "VALID" : "NULL/UNDEFINED");
+// --- END DIAGNOSTIC LOGS for schoolService.ts ---
+
 const schoolsCollectionRef = collection(db, 'schools');
 
 /**
@@ -26,6 +30,7 @@ const schoolsCollectionRef = collection(db, 'schools');
  */
 export const addSchool = async (schoolData: Omit<School, 'id' | 'createdAt' | 'updatedAt'>): Promise<School> => {
   try {
+    console.log("Attempting to add school:", schoolData);
     const now = Date.now();
     const newSchool = {
       ...schoolData,
@@ -33,9 +38,10 @@ export const addSchool = async (schoolData: Omit<School, 'id' | 'createdAt' | 'u
       updatedAt: now,
     };
     const docRef = await addDoc(schoolsCollectionRef, newSchool);
+    console.log("School added successfully with ID:", docRef.id);
     return { id: docRef.id, ...newSchool } as School;
-  } catch (error) {
-    console.error('Error adding school:', error);
+  } catch (error: any) {
+    console.error('Error adding school:', error.message, error.stack);
     throw new Error('Failed to add school.');
   }
 };
@@ -50,14 +56,17 @@ export const addSchool = async (schoolData: Omit<School, 'id' | 'createdAt' | 'u
  */
 export const getSchoolById = async (id: string): Promise<School | null> => {
   try {
+    console.log("Attempting to get school by ID:", id);
     const docRef = doc(db, 'schools', id);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
+      console.log("School found:", docSnap.id);
       return { id: docSnap.id, ...docSnap.data() } as School;
     }
+    console.log("School not found for ID:", id);
     return null;
-  } catch (error) {
-    console.error(`Error getting school with ID ${id}:`, error);
+  } catch (error: any) {
+    console.error(`Error getting school with ID ${id}:`, error.message, error.stack);
     throw new Error(`Failed to retrieve school with ID ${id}.`);
   }
 };
@@ -72,15 +81,17 @@ export const getSchoolById = async (id: string): Promise<School | null> => {
  */
 export const getAllSchools = async (): Promise<School[]> => {
   try {
+    console.log("Attempting to get all schools.");
     const q = query(schoolsCollectionRef);
     const querySnapshot = await getDocs(q);
     const schools: School[] = [];
     querySnapshot.forEach((doc) => {
       schools.push({ id: doc.id, ...doc.data() } as School);
     });
+    console.log("Successfully retrieved", schools.length, "schools.");
     return schools;
-  } catch (error) {
-    console.error('Error getting all schools:', error);
+  } catch (error: any) {
+    console.error('Error getting all schools:', error.message, error.stack);
     throw new Error('Failed to retrieve all schools.');
   }
 };
@@ -95,10 +106,12 @@ export const getAllSchools = async (): Promise<School[]> => {
  */
 export const updateSchool = async (id: string, schoolData: Partial<Omit<School, 'id' | 'createdAt' | 'updatedAt'>>): Promise<void> => {
   try {
+    console.log("Attempting to update school with ID:", id, "Data:", schoolData);
     const docRef = doc(db, 'schools', id);
     await updateDoc(docRef, { ...schoolData, updatedAt: Date.now() });
-  } catch (error) {
-    console.error(`Error updating school with ID ${id}:`, error);
+    console.log("School updated successfully with ID:", id);
+  } catch (error: any) {
+    console.error(`Error updating school with ID ${id}:`, error.message, error.stack);
     throw new Error(`Failed to update school with ID ${id}.`);
   }
 };
@@ -113,10 +126,12 @@ export const updateSchool = async (id: string, schoolData: Partial<Omit<School, 
  */
 export const deleteSchool = async (id: string): Promise<void> => {
   try {
+    console.log("Attempting to delete school with ID:", id);
     const docRef = doc(db, 'schools', id);
     await deleteDoc(docRef);
-  } catch (error) {
-    console.error(`Error deleting school with ID ${id}:`, error);
+    console.log("School deleted successfully with ID:", id);
+  } catch (error: any) {
+    console.error(`Error deleting school with ID ${id}:`, error.message, error.stack);
     throw new Error(`Failed to delete school with ID ${id}.`);
   }
 };

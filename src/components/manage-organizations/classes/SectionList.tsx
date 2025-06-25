@@ -7,9 +7,9 @@ import { Section } from '../../../types/manage-organizations';
 
 interface SectionListProps {
   classId: string | null;
-  refreshTrigger: number;
-  onSelectSection: (sectionId: string) => void; // New prop for selecting a section
-  selectedSectionId: string | null; // New prop to highlight the selected section
+  refreshTrigger?: number; // Made optional as per plan
+  onSelectSection?: (sectionId: string | null) => void; // Made optional and allowed null in callback as per plan
+  selectedSectionId?: string | null; // Made optional as per plan
 }
 
 /**
@@ -89,13 +89,13 @@ const SectionList: React.FC<SectionListProps> = ({
               {sections.map((section) => (
                 <tr
                   key={section.id}
-                  onClick={() => onSelectSection(section.id)}
+                  onClick={() => onSelectSection && onSelectSection(section.id)}
                   className={`cursor-pointer hover:bg-gray-100 ${selectedSectionId === section.id ? 'bg-blue-50' : ''}`}
                 >
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{section.name}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     {/* Add edit/delete buttons here later */}
-                    <span className="text-gray-400">Actions (coming soon)</span>
+                    <span className="text-gray-400">Select to manage sections</span>
                   </td>
                 </tr>
               ))}

@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "prepmeinc"
-  }
+    "default": "prepmeinc",
+    "Prepme-Development": "prepmeinc"
+  },
+  "targets": {},
+  "etags": {}
 }

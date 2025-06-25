@@ -7,9 +7,11 @@ import { Subject } from '../../../types/manage-organizations';
 
 interface SubjectListProps {
   schoolId: string | null;
-  refreshTrigger: number;
+  classId?: string | null; // Added classId as optional
+  refreshTrigger: number; // Keep as required based on current usage pattern in page.tsx if it's used as a direct refresh trigger.
   onSelectSubject: (subjectId: string | null) => void;
   selectedSubjectId: string | null;
+  showSelectAllOption?: boolean; // Added showSelectAllOption
 }
 
 /**
@@ -22,9 +24,11 @@ interface SubjectListProps {
  */
 const SubjectList: React.FC<SubjectListProps> = ({
   schoolId,
+  classId,
   refreshTrigger,
   onSelectSubject,
   selectedSubjectId,
+  showSelectAllOption,
 }) => {
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -40,7 +44,11 @@ const SubjectList: React.FC<SubjectListProps> = ({
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`/api/manage-organizations/subjects?schoolId=${schoolId}`);
+      let url = `/api/manage-organizations/subjects?schoolId=${schoolId}`;
+      if (classId) {
+        url += `&classId=${classId}`;
+      }
+      const response = await fetch(url);
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || 'Failed to fetch subjects');
@@ -53,11 +61,11 @@ const SubjectList: React.FC<SubjectListProps> = ({
     } finally {
       setLoading(false);
     }
-  }, [schoolId]);
+  }, [schoolId, classId]); // Added classId to dependencies
 
   useEffect(() => {
     fetchSubjects();
-  }, [fetchSubjects, refreshTrigger]); // Re-fetch when schoolId or refreshTrigger changes
+  }, [fetchSubjects, refreshTrigger]); // Re-fetch when schoolId, classId or refreshTrigger changes
 
   if (!schoolId) {
     return (
@@ -91,6 +99,16 @@ const SubjectList: React.FC<SubjectListProps> = ({
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
+              {showSelectAllOption && (
+                <tr
+                  className={`${
+                    selectedSubjectId === null ? 'bg-blue-50' : ''
+                  } hover:bg-gray-50 cursor-pointer`}
+                  onClick={() => onSelectSubject(null)}
+                >
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" colSpan={3}>All Subjects</td>
+                </tr>
+              )}
               {subjects.map((subject) => (
                 <tr
                   key={subject.id}

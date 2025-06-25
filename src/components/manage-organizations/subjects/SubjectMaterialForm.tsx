@@ -7,36 +7,31 @@ import { SubjectMaterial } from '../../../types/manage-organizations';
 
 interface SubjectMaterialFormProps {
   schoolId: string | null;
-  classId: string | null; // Material might be specific to a class
+  classId: string | null;
   subjectId: string | null;
-  onMaterialAdded: () => void;
+  onSuccess?: () => void;
 }
 
 /**
  * Feature ID: MO-026
  * Feature Name: Frontend Component - Subject Material Form (Placeholder for File Upload)
- * What it does: Provides a form for adding new subject material records, including title, description, and placeholders for file URL and optional test key URL.
- * Description: Allows administrators to input details for subject materials. The actual file upload mechanism to a storage solution (like Firebase Storage) is noted as a future, separate implementation step. For now, it will simulate file URLs.
- * Current Module Implemented: Manage-Organizations (src/components/manage-organizations/subjects)
- * Module to be implemented: Manage-Organizations (Actual file upload to Firebase Storage, integration into page.tsx)
  */
 const SubjectMaterialForm: React.FC<SubjectMaterialFormProps> = ({
   schoolId,
   classId,
   subjectId,
-  onMaterialAdded,
+  onSuccess,
 }) => {
-  const [title, setTitle] = useState<string>('');
-  const [description, setDescription] = useState<string>('');
-  const [fileUrl, setFileUrl] = useState<string>(''); // Placeholder for actual file upload URL
-  const [fileName, setFileName] = useState<string>('');
-  const [fileType, setFileType] = useState<string>('');
-  const [testKeyFileUrl, setTestKeyFileUrl] = useState<string>(''); // Optional test key file URL
-  const [loading, setLoading] = useState<boolean>(false);
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [fileUrl, setFileUrl] = useState('');
+  const [fileName, setFileName] = useState('');
+  const [fileType, setFileType] = useState('');
+  const [testKeyFileUrl, setTestKeyFileUrl] = useState('');
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
-  // Reset form fields when selection changes
   useEffect(() => {
     if (!schoolId || !classId || !subjectId) {
       setTitle('');
@@ -63,8 +58,6 @@ const SubjectMaterialForm: React.FC<SubjectMaterialFormProps> = ({
     setSuccess(null);
 
     try {
-      // In a real application, file upload to Firebase Storage would happen here first.
-      // For now, we assume fileUrl, fileName, fileType are obtained or manually entered.
       if (!fileUrl || !fileName || !fileType) {
         throw new Error('Please provide a file URL, file name, and file type for the material.');
       }
@@ -78,17 +71,14 @@ const SubjectMaterialForm: React.FC<SubjectMaterialFormProps> = ({
         fileUrl,
         fileName,
         fileType,
-        ...(testKeyFileUrl && { testKeyFileUrl }), // Only include if provided
+        ...(testKeyFileUrl && { testKeyFileUrl }),
       };
 
-      // TODO: Replace with actual userId from authentication context
-      const uploadedBy = "admin_user_id"; 
+      const uploadedBy = "admin_user_id";
 
       const response = await fetch('/api/manage-organizations/subject-materials', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...materialData, uploadedBy }),
       });
 
@@ -99,7 +89,7 @@ const SubjectMaterialForm: React.FC<SubjectMaterialFormProps> = ({
 
       const data = await response.json();
       setSuccess(`Material '${data.material.title}' added successfully!`);
-      // Clear form fields
+
       setTitle('');
       setDescription('');
       setFileUrl('');
@@ -107,7 +97,7 @@ const SubjectMaterialForm: React.FC<SubjectMaterialFormProps> = ({
       setFileType('');
       setTestKeyFileUrl('');
 
-      onMaterialAdded(); // Notify parent component to refresh list
+      onSuccess && onSuccess();
     } catch (err: any) {
       setError(err.message || 'An unexpected error occurred.');
     } finally {
@@ -133,6 +123,7 @@ const SubjectMaterialForm: React.FC<SubjectMaterialFormProps> = ({
             disabled={isFormDisabled}
           />
         </div>
+
         <div>
           <label htmlFor="materialDescription" className="block text-sm font-medium text-gray-700">Description (Optional)</label>
           <textarea
@@ -144,10 +135,12 @@ const SubjectMaterialForm: React.FC<SubjectMaterialFormProps> = ({
             disabled={isFormDisabled}
           />
         </div>
-        {/* Placeholder for actual file upload input */}
+
+        {/* File Upload Placeholder */}
         <div className="border border-dashed border-gray-300 p-4 rounded-md text-center text-gray-500">
           <p className="font-medium">File Upload Area (Coming Soon: Firebase Storage Integration)</p>
           <p className="text-sm mb-2">For now, please manually provide file details:</p>
+
           <div>
             <label htmlFor="fileUrl" className="block text-sm font-medium text-gray-700">File URL</label>
             <input
@@ -161,9 +154,10 @@ const SubjectMaterialForm: React.FC<SubjectMaterialFormProps> = ({
               disabled={isFormDisabled}
             />
           </div>
+
           <div className="mt-2 grid grid-cols-2 gap-4">
             <div>
-              <label htmlFor="fileName" className="block text-sm font-medium text-gray-700">File Name (e.g., MyChapter1.pdf)</label>
+              <label htmlFor="fileName" className="block text-sm font-medium text-gray-700">File Name</label>
               <input
                 type="text"
                 id="fileName"
@@ -174,8 +168,9 @@ const SubjectMaterialForm: React.FC<SubjectMaterialFormProps> = ({
                 disabled={isFormDisabled}
               />
             </div>
+
             <div>
-              <label htmlFor="fileType" className="block text-sm font-medium text-gray-700">File Type (e.g., application/pdf)</label>
+              <label htmlFor="fileType" className="block text-sm font-medium text-gray-700">File Type</label>
               <input
                 type="text"
                 id="fileType"
@@ -187,14 +182,15 @@ const SubjectMaterialForm: React.FC<SubjectMaterialFormProps> = ({
               />
             </div>
           </div>
-        </div>
-        
-        {/* Optional Test Key File Upload Placeholder */}
+        </div> {/* ✅ This closing div was missing! */}
+
+        {/* Test Key File URL Section */}
         <div className="border border-dashed border-gray-300 p-4 rounded-md text-center text-gray-500">
           <p className="font-medium">Optional: Test Key File Upload Area (Coming Soon)</p>
-          <p className="text-sm mb-2">For now, you can provide an optional test key file URL:</p>
+          <p className="text-sm mb-2">You can provide an optional test key file URL:</p>
+
           <div>
-            <label htmlFor="testKeyFileUrl" className="block text-sm font-medium text-gray-700">Test Key File URL (Optional)</label>
+            <label htmlFor="testKeyFileUrl" className="block text-sm font-medium text-gray-700">Test Key File URL</label>
             <input
               type="text"
               id="testKeyFileUrl"
@@ -209,6 +205,7 @@ const SubjectMaterialForm: React.FC<SubjectMaterialFormProps> = ({
 
         {error && <p className="text-red-500 text-sm mt-4">{error}</p>}
         {success && <p className="text-green-500 text-sm mt-4">{success}</p>}
+
         <button
           type="submit"
           className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"

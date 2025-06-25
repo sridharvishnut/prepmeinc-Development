@@ -177,10 +177,278 @@ const ManageOrganizationsPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 p-8">
-      {/* Tabs, UI components, conditionals for each tab go here */}
-      {/* For brevity, left out — include tab switching and render blocks as per your full shared file */}
+      <h1 className="text-3xl font-bold text-gray-800 mb-8">Manage Organizations</h1>
+
+      <div className="mb-8 flex space-x-4">
+        <TabButton label="Schools" activeTab={activeTab} setActiveTab={setActiveTab} tabName="schools" />
+        <TabButton label="Classes" activeTab={activeTab} setActiveTab={setActiveTab} tabName="classes" />
+        <TabButton label="Students" activeTab={activeTab} setActiveTab={setActiveTab} tabName="students" />
+        <TabButton label="Subjects" activeTab={activeTab} setActiveTab={setActiveTab} tabName="subjects" />
+        <TabButton label="Users" activeTab={activeTab} setActiveTab={setActiveTab} tabName="users" />
+        <TabButton label="Exam Results" activeTab={activeTab} setActiveTab={setActiveTab} tabName="examResults" />
+      </div>
+
+      <div className="bg-white p-6 rounded-lg shadow-md">
+        {activeTab === 'schools' && (
+          <div>
+            <h2 className="text-2xl font-semibold text-gray-700 mb-4">Schools</h2>
+            {/* Corrected prop name from onSuccess to onSchoolAdded */}
+            <SchoolForm onSchoolAdded={handleSchoolAdded} />
+            <SchoolList
+              key={refreshSchoolList}
+              onSelectSchool={handleSelectSchool}
+              refreshTrigger={refreshSchoolList}
+              selectedSchoolId={selectedSchoolId}
+            />
+          </div>
+        )}
+
+        {activeTab === 'classes' && (
+          <div>
+            <h2 className="text-2xl font-semibold text-gray-700 mb-4">Classes</h2>
+            <div className="mb-4">
+              <label htmlFor="select-school-for-class" className="block text-gray-700 text-sm font-bold mb-2">Select School:</label>
+              <SchoolList
+                key={`select-class-school-${refreshSchoolList}`}
+                onSelectSchool={(id) => {
+                  setSelectedSchoolId(id);
+                  setSelectedClassId(null);
+                  setRefreshClassList(prev => prev + 1);
+                }}
+                selectedSchoolId={selectedSchoolId}
+                showSelectAllOption={true}
+                refreshTrigger={refreshSchoolList}
+              />
+            </div>
+
+            {selectedSchoolId ? (
+              <>
+                {/* Corrected prop name from onSuccess to onClassAdded */}
+                <ClassForm onClassAdded={handleClassAdded} schoolId={selectedSchoolId} />
+                <ClassList
+                  key={refreshClassList}
+                  schoolId={selectedSchoolId}
+                  onSelectClass={handleSelectClass}
+                  selectedClassId={selectedClassId}
+                  refreshTrigger={refreshClassList}
+                />
+                {selectedClassId && (
+                  <div className="mt-8">
+                    <h3 className="text-xl font-semibold text-gray-700 mb-4">Sections for selected Class</h3>
+                    {/* Corrected prop name from onSuccess to onSectionAdded */}
+                    <SectionForm onSectionAdded={handleSectionAdded} classId={selectedClassId} schoolId={selectedSchoolId} />
+                    <SectionList
+                      key={refreshSectionList}
+                      classId={selectedClassId}
+                      onSelectSection={handleSelectStudentSection} 
+                      selectedSectionId={selectedStudentSectionId} 
+                      refreshTrigger={refreshSectionList}
+                    />
+                  </div>
+                )}
+              </>
+            ) : (
+              <p className="text-gray-600">Please select a school to manage classes and sections.</p>
+            )}
+          </div>
+        )}
+
+        {activeTab === 'students' && (
+          <div>
+            <h2 className="text-2xl font-semibold text-gray-700 mb-4">Students</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+              <div>
+                <label htmlFor="select-school-for-student" className="block text-gray-700 text-sm font-bold mb-2">Select School:</label>
+                <SchoolList
+                  key={`select-student-school-${refreshSchoolList}`}
+                  onSelectSchool={handleSelectStudentSchool}
+                  selectedSchoolId={selectedStudentSchoolId}
+                  showSelectAllOption={true}
+                  refreshTrigger={refreshSchoolList}
+                />
+              </div>
+              <div>
+                <label htmlFor="select-class-for-student" className="block text-gray-700 text-sm font-bold mb-2">Select Class:</label>
+                <ClassList
+                  key={`select-student-class-${refreshClassList}`}
+                  schoolId={selectedStudentSchoolId}
+                  onSelectClass={handleSelectStudentClass}
+                  selectedClassId={selectedStudentClassId}
+                  showSelectAllOption={true}
+                  refreshTrigger={refreshClassList}
+                />
+              </div>
+              <div>
+                <label htmlFor="select-section-for-student" className="block text-gray-700 text-sm font-bold mb-2">Select Section:</label>
+                <SectionList
+                  key={`select-student-section-${refreshSectionList}`}
+                  classId={selectedStudentClassId}
+                  onSelectSection={handleSelectStudentSection}
+                  selectedSectionId={selectedStudentSectionId}
+                  refreshTrigger={refreshSectionList}
+                />
+              </div>
+            </div>
+
+            {(selectedStudentSchoolId || selectedStudentClassId || selectedStudentSectionId) && (
+              <StudentForm
+                onStudentAdded={handleStudentAdded}
+                schoolId={selectedStudentSchoolId}
+                classId={selectedStudentClassId}
+                sectionId={selectedStudentSectionId}
+              />
+            )}
+            <StudentList
+              key={refreshStudentList}
+              schoolId={selectedStudentSchoolId}
+              classId={selectedStudentClassId}
+              sectionId={selectedStudentSectionId}
+              refreshTrigger={refreshStudentList} // Added missing prop
+            />
+          </div>
+        )}
+
+        {activeTab === 'subjects' && (
+          <div>
+            <h2 className="text-2xl font-semibold text-gray-700 mb-4">Subjects & Materials</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+              <div>
+                <label htmlFor="select-school-for-subject" className="block text-gray-700 text-sm font-bold mb-2">Select School:</label>
+                <SchoolList
+                  key={`select-subject-school-${refreshSchoolList}`}
+                  onSelectSchool={handleSelectSubjectSchool}
+                  selectedSchoolId={selectedSubjectSchoolId}
+                  showSelectAllOption={true}
+                  refreshTrigger={refreshSchoolList}
+                />
+              </div>
+              <div>
+                <label htmlFor="select-class-for-subject" className="block text-gray-700 text-sm font-bold mb-2">Select Class:</label>
+                <ClassList
+                  key={`select-subject-class-${refreshClassList}`}
+                  schoolId={selectedSubjectSchoolId}
+                  onSelectClass={handleSelectSubjectClass}
+                  selectedClassId={selectedSubjectClassId}
+                  showSelectAllOption={true}
+                  refreshTrigger={refreshClassList}
+                />
+              </div>
+              <div>
+                <label htmlFor="select-subject" className="block text-gray-700 text-sm font-bold mb-2">Select Subject:</label>
+                <SubjectList
+                  key={`select-subject-${refreshSubjectList}`}
+                  schoolId={selectedSubjectSchoolId}
+                  classId={selectedSubjectClassId}
+                  onSelectSubject={handleSelectSubject}
+                  selectedSubjectId={selectedSubjectId}
+                  showSelectAllOption={true}
+                  refreshTrigger={refreshSubjectList} // Added missing prop
+                />
+              </div>
+            </div>
+            {(selectedSubjectSchoolId && selectedSubjectClassId) && (
+              <SubjectForm
+                onSubjectAdded={handleSubjectAdded} 
+                schoolId={selectedSubjectSchoolId}
+                classId={selectedSubjectClassId}
+              />
+            )}
+            <SubjectList
+              key={refreshSubjectList}
+              schoolId={selectedSubjectSchoolId}
+              classId={selectedSubjectClassId}
+              onSelectSubject={handleSelectSubject}
+              selectedSubjectId={selectedSubjectId}
+            />
+
+            <div className="mt-8">
+              <h3 className="text-xl font-semibold text-gray-700 mb-4">Subject Materials</h3>
+              {selectedSubjectSchoolId && selectedSubjectClassId && selectedSubjectId ? (
+                <>
+                  <SubjectMaterialForm
+                    onSuccess={handleSubjectMaterialAdded}
+                    schoolId={selectedSubjectSchoolId}
+                    classId={selectedSubjectClassId}
+                    subjectId={selectedSubjectId}
+                  />
+                  <SubjectMaterialList
+                    key={refreshSubjectMaterialList}
+                    schoolId={selectedSubjectSchoolId}
+                    classId={selectedSubjectClassId}
+                    subjectId={selectedSubjectId}
+                    refreshTrigger={refreshSubjectMaterialList} // Added missing prop
+                  />
+                </>
+              ) : (
+                <p className="text-gray-600">{getSubjectMaterialMessage()}</p>
+              )}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'users' && (
+          <div>
+            <h2 className="text-2xl font-semibold text-gray-700 mb-4">Users</h2>
+            <div className="mb-4">
+              <label htmlFor="select-school-for-user" className="block text-gray-700 text-sm font-bold mb-2">Filter by School:</label>
+              <SchoolList
+                key={`select-user-school-${refreshSchoolList}`}
+                onSelectSchool={handleSelectUserSchool}
+                selectedSchoolId={selectedUserSchoolId}
+                showSelectAllOption={true}
+                refreshTrigger={refreshSchoolList}
+              />
+            </div>
+            <UserForm onSuccess={handleUserAdded} schoolId={selectedUserSchoolId} />
+            <UserList 
+              key={refreshUserList} 
+              schoolId={selectedUserSchoolId} 
+              refreshTrigger={refreshUserList} // Added missing prop
+            />
+          </div>
+        )}
+
+        {activeTab === 'examResults' && (
+          <div>
+            <h2 className="text-2xl font-semibold text-gray-700 mb-4">Exam Results</h2>
+            <ExamResultFilters
+              filters={examResultFilters}
+              onFilterChange={handleExamResultFilterChange}
+              refreshSchoolList={refreshSchoolList}
+              refreshClassList={refreshClassList}
+              refreshSectionList={refreshSectionList}
+              refreshSubjectList={refreshSubjectList}
+              refreshStudentList={refreshStudentList}
+            />
+            <ExamResultsDashboard
+              key={refreshExamResults}
+              filters={examResultFilters}
+            />
+            <TopRankerDashboard
+              key={`top-rankers-${refreshExamResults}`}
+              filters={examResultFilters}
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 };
+
+interface TabButtonProps {
+  label: string;
+  tabName: string;
+  activeTab: string;
+  setActiveTab: (tab: string) => void;
+}
+
+const TabButton: React.FC<TabButtonProps> = ({ label, tabName, activeTab, setActiveTab }) => (
+  <button
+    className={`px-4 py-2 rounded-md focus:outline-none ${activeTab === tabName ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800 hover:bg-gray-300'}`}
+    onClick={() => setActiveTab(tabName)}
+  >
+    {label}
+  </button>
+);
 
 export default ManageOrganizationsPage;
