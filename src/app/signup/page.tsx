@@ -1,14 +1,15 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, Suspense, use } from 'react'; // Import use from react
 import { useRouter, useSearchParams } from 'next/navigation';
 import { getClientAuth } from '@/auth';
-import { updateProfile, onAuthStateChanged, User } from 'firebase/auth';
+import { updateProfile, onAuthStateChanged, User, Auth } from 'firebase/auth';
 
 function SignupContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const initialEmail = searchParams.get('email') || '';
+  const params = use(searchParams); // Unwrap with use()
+  const initialEmail = params.get('email') || ''; // Use params instead of searchParams
   const [fullName, setFullName] = useState<string>('');
   const [mobileNumber, setMobileNumber] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
@@ -102,7 +103,7 @@ function SignupContent() {
 
         <div className="mt-8 space-y-4">
           <p className="text-center text-sm text-gray-600">
-            Welcome! Please complete your profile to continue.
+            Welcome! Please complete your profile to continue.\n
           </p>
           <div className="mb-4">
             <label htmlFor="email" className="sr-only">Email address</label>

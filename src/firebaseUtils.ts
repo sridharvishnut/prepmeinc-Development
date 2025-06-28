@@ -52,15 +52,25 @@ export const auth = _auth;
 export const storage = getStorage(app);
 
 export const uploadDocument = async (file: File, userId: string, category: string, onProgress: (progress: number) => void) => {
-  if (!userId) {
+  // Get the current authenticated user
+  const currentUser = auth.currentUser;
+
+  if (!currentUser) {
     throw new Error("User is not authenticated.");
   }
 
-  const filePath = `${userId}/${category}/${file.name}`;
-  const storageRef = ref(storage, filePath);
+  const uid = currentUser.uid; // Use the UID from the authenticated user
+
+  // Conditionally add '/testing/' for anonymous users
+  const storagePath = currentUser.isAnonymous
+    ? `${uid}/testing/${category}/${file.name}`
+    : `${uid}/${category}/${file.name}`;
+
+
+  const storageRef = ref(storage, storagePath);
   const uploadTask = uploadBytesResumable(storageRef, file);
 
-  console.log("Starting upload for file:", file.name, "to path:", filePath);
+  console.log("Starting upload for file:", file.name, "to path:", storagePath);
 
   return new Promise((resolve, reject) => {
     uploadTask.on('state_changed',
@@ -80,14 +90,14 @@ export const uploadDocument = async (file: File, userId: string, category: strin
           console.log("Download URL obtained:", downloadURL);
 
           await addDoc(collection(db, "documents"), {
-            userId: userId,
+            userId: uid, // Use uid here as well
             category: category,
             fileName: file.name,
             fileSize: file.size,
             fileType: file.type,
             downloadURL: downloadURL,
             uploadedAt: serverTimestamp(),
-            storagePath: filePath,
+            storagePath: storagePath,
           });
           console.log("File uploaded and metadata saved successfully to Firestore.", downloadURL);
           resolve(downloadURL);

@@ -1,6 +1,7 @@
 [
   {
-    "origin": ["https://9000-firebase-prepmeinc-1750591195440.cluster-nzwlpk54dvagsxetkvxzbvslyi.cloudworkstations.dev"],
+    "origin": ["https://9000-firebase-prepmeinc-1750591195440.cluster-nzwlpk54dvagsxetkvxzbvslyi.cloudworkstations.dev",
+      "https://9000-firebase-prepmeinc-workspace-1751037793627.cluster-nzwlpk54dvagsxetkvxzbvslyi.cloudworkstations.dev"],
     "method": ["GET", "HEAD", "DELETE", "POST", "PUT"],
     "responseHeader": ["*"],
     "maxAgeSeconds": 3000

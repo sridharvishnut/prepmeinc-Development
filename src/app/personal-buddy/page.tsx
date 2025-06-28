@@ -117,30 +117,14 @@ function PersonalBuddyContent() {
     }
   };
 
-  const fetchDocumentContent = async (downloadURL: string): Promise<string> => {
-    try {
-      const response = await fetch(downloadURL);
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      return await response.text();
-    } catch (error) {
-      console.error("Error fetching document content:", error);
-      setAiError("Could not fetch document content for AI processing.");
-      return "";
-    }
-  };
-
   const performAIAction = async (action: 'summary' | 'mcqs' | 'qna', doc: DocumentMetadata, question?: string) => {
     setAiLoading(true);
     setAiError(null);
     try {
-      const text = await fetchDocumentContent(doc.downloadURL);
-      if (!text) return;
-
       let result = "";
-      if (action === 'summary') result = await summarizeDocumentServer(text);
-      if (action === 'mcqs') result = await generateMCQsServer(text);
-      if (action === 'qna' && question) result = await askDocumentServer(text, question);
-
+      if (action === 'summary') result = await summarizeDocumentServer(doc.downloadURL);
+      if (action === 'mcqs') result = await generateMCQsServer(doc.downloadURL);
+      if (action === 'qna' && question) result = await askDocumentServer(doc.downloadURL, question);
       setAiResultsMap(prev => ({
         ...prev,
         [doc.id]: { ...prev[doc.id], [action]: result }
@@ -376,7 +360,13 @@ function PersonalBuddyContent() {
 }
 
 export default function PersonalBuddyPage() {
+  const Loading = () => <div>Loading Personal Buddy...</div>;
+  const PersonalBuddyContentDynamic = NextDynamic(() => Promise.resolve(PersonalBuddyContent), {
+    ssr: false,
+    loading: Loading,
+  });
+
   return (
-    <NextDynamic ssr={false} loading={() => <div>Loading Personal Buddy...</div>} component={PersonalBuddyContent} />
+    <PersonalBuddyContentDynamic />
   );
 }
